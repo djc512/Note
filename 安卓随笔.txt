@@ -1,0 +1,5 @@
+1.安卓8.0分享到抖音的content://打不开
+	StrictMode.VmPolicy.Builder.detectFileUriExposure()。顾名思义，调用这个方法就会检测FileUriExposure这件事。
+	在Application的onCreate中添加一下判断
+	if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) 
+	{StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();StrictMode.setVmPolicy(builder.build());}
