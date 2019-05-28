@@ -3,3 +3,9 @@
 	在Application的onCreate中添加一下判断
 	if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) 
 	{StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();StrictMode.setVmPolicy(builder.build());}
+2.配置安卓studio环境
+	1.现在jdk，jdk12没有jre,可以不下载，只需要配置jdk的环境变量即可
+	2.下载git，直接安装即可，会自动配置环境变量（D:\Android\Git\cmd），然后配置用户名与邮箱，直接按照网上有教程即可，然后就可以直接使用
+	3.如果已经通过githubDesktop提前建好仓库了，只需要执行git命令即可，提交使用get push 这一点与公司使用的命令不一样，不需要带仓库路径
+	4.常用命令：git status		git add .		git commit -m "注释"		git push 
+	
