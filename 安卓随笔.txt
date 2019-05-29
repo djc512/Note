@@ -3,9 +3,40 @@
 	在Application的onCreate中添加一下判断
 	if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) 
 	{StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();StrictMode.setVmPolicy(builder.build());}
+	
 2.配置安卓studio环境
 	1.现在jdk，jdk12没有jre,可以不下载，只需要配置jdk的环境变量即可
 	2.下载git，直接安装即可，会自动配置环境变量（D:\Android\Git\cmd），然后配置用户名与邮箱，直接按照网上有教程即可，然后就可以直接使用
 	3.如果已经通过githubDesktop提前建好仓库了，只需要执行git命令即可，提交使用get push 这一点与公司使用的命令不一样，不需要带仓库路径
 	4.常用命令：git status		git add .		git commit -m "注释"		git push 
+
+3.Ubuntu进入超级管理员
+	1.sudo passwd root
+	2.设置密码
+	3.su 然后输入设置的密码
 	
+	1.安装yum
+		apt-get install yum
+	2.安装yasm
+		apt-get install yasm
+	3.安装gcc
+		apt-get install gcc 
+	
+	编译ffmpeg 为了防止权限问题，先获取超级管理员权限，再此权限下编译（有时候仍会报没有权限的问题，需要单独申请权限）
+		1.先修改configure文件为安卓可用
+		2.注意替换ndk为自己的路径
+		3.修改config.sh 需要编译的功能,没有权限的文件 chmod +x xxx获取权限
+		4.在根目录下，直接使用脚本命令./build_ffmpeg.sh armeabi(x86 armeabi-v7a)即可
+		5.如果需要将多个文件合并成一个./build_ffmpeg_merge.sh，只能使用动态库，然后修改config.sh合并脚本的最后一个脚本libffmpeg.a或者libffmpeg.so即可获取静态或者动态合并库
+		6.build_ffmpeg_svn.sh与build_ffmpeg_merge_FFmpeg4Android.sh没什么用，编译仅供参考
+	
+	x264编译
+		1.先修改ndk路径
+		2.直接使用svn库里提供的脚本，运行对应的脚本即可，不需要参考FFmpeg4Android里的脚本
+		3.使用命令./build_x264_arm64.sh  即可
+		
+	openssl编译
+		1.修改相关文件权限
+		2.直接运行./config文件，会在目录下生成Makefile文件
+		3.将SVN里的Makefile文件替换生成的文件，不要忘记修改ndk路径
+		4.直接运行make即可

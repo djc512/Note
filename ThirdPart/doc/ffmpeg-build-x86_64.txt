@@ -1,0 +1,3 @@
+
+./configure --prefix=build --disable-debug --disable-network --disable-programs --disable-doc --disable-encoders --disable-avfilter --disable-decoders --disable-hwaccels --disable-muxers --disable-demuxers --disable-parsers --disable-bsfs --disable-protocols --disable-indevs --disable-outdevs --disable-devices --disable-filters --enable-decoder=h264 --enable-decoder=hevc --enable-decoder=aac --enable-static --enable-memalign-hack --arch=x86_64 --host-os=win64 --extra-ldflags=-L/usr/x86_64-w64-mingw32/lib --sysroot=/usr/x86_64-w64-mingw32 --enable-cross-compile --cross-prefix=x86_64-w64-mingw32- --target-os=mingw32 --enable-w32threads --extra-cflags="-I/usr/x86_64-w64-mingw32/include -fno-stack-check -fno-stack-protector -mno-stack-arg-probe -D__USE_MINGW_ANSI_STDIO=0"
+
