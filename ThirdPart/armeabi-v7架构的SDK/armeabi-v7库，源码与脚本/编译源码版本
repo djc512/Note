@@ -1,4 +1,0 @@
-openssl：使用SVN提供的源码，按照编译SVN文档进行编译即可
-x264:使用在网上下载的148的x264源码（https://download.csdn.net/download/qq_25817651/9617292），按照SVN提供的编译脚本进行编译
-FFmpeg：1.使用2.3.6版本源码进行编译，按照FFmpeg4Android提供的脚本
-FFmpeg：2.添加--enable-decoder=h264 \--enable-decoder=hevc \--enable-decoder=aac \--enable-memalign-hack \这些指令进行编译
