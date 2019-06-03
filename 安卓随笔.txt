@@ -11,11 +11,21 @@
 	4.常用命令：git status		git add .		git commit -m "注释"		git push 
 
 3.Ubuntu进入超级管理员
+	
+	vm虚拟机配网
+		1.打开本地的网络适配器，选择共享到v8
+		2.后续参考https://www.cnblogs.com/robohou/p/7220813.html这个网址即可
+	
 	1.sudo passwd root
 	2.设置密码
 	3.su 然后输入设置的密码
 	
 	chmod 777 * -R 进入文件夹获取所有文件的权限
+
+	sudo apt-get install tofrodos  进行文本格式的转换
+	todos Hello.txt (即unix2dos Hello.txt) 
+	fromdos Hello.txt (即dos2unix Hello.txt)
+	
 	
 	1.安装yum
 		apt-get install yum
@@ -52,3 +62,10 @@
 		2.直接运行./config文件，会在目录下生成Makefile文件
 		3.将SVN里的Makefile文件替换生成的文件，不要忘记修改ndk路径
 		4.直接运行make即可
+		
+		
+		
+		https://www.jianshu.com/p/612ef67e42bd
+		https://github.com/mabeijianxi/FFmpeg4Android
+		https://www.jianshu.com/p/f23c62820b79?utm_campaign=maleskine&utm_content=note&utm_medium=seo_notes&utm_source=recommendation
+		https://blog.csdn.net/u011192270/article/details/76800821
