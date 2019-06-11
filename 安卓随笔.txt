@@ -21,8 +21,10 @@
 	3.su 然后输入设置的密码
 	
 	chmod 777 * -R 进入文件夹获取所有文件的权限
+	rm -r 文件或者文件夹    删除文件或者文件夹
+	chmod 777 -R 文件名     获取文件权限
 
-	sudo apt-get install tofrodos  进行文本格式的转换
+	sudo apt-get install tofrodos  安装文本格式的转换（运行脚本报错\r\n这种错误）
 	todos Hello.txt (即unix2dos Hello.txt) 
 	fromdos Hello.txt (即dos2unix Hello.txt)
 	
@@ -50,7 +52,11 @@
 		5.如果需要将多个文件合并成一个./build_ffmpeg_merge.sh，只能使用动态库，然后修改config.sh合并脚本的最后一个脚本libffmpeg.a或者libffmpeg.so即可获取静态或者动态合并库
 		6.build_ffmpeg_svn.sh与build_ffmpeg_merge_FFmpeg4Android.sh没什么用，编译仅供参考
 		
+		
+		在编译arm64-va8时，将--arch=$AOSP_ABI改为--arch=aarch64否则编译失败，其他的架构不需要改
+		NDK一般使用ndk10b
 		修改过NDK路径没有起作用，重新执行./configure文件
+		C compiler test failed.这种错误优先排查./configure里的配置是否正确
 	
 	x264编译
 		1.先修改ndk路径
@@ -62,10 +68,3 @@
 		2.直接运行./config文件，会在目录下生成Makefile文件
 		3.将SVN里的Makefile文件替换生成的文件，不要忘记修改ndk路径
 		4.直接运行make即可
-		
-		
-		
-		https://www.jianshu.com/p/612ef67e42bd
-		https://github.com/mabeijianxi/FFmpeg4Android
-		https://www.jianshu.com/p/f23c62820b79?utm_campaign=maleskine&utm_content=note&utm_medium=seo_notes&utm_source=recommendation
-		https://blog.csdn.net/u011192270/article/details/76800821
