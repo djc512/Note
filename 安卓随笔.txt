@@ -64,7 +64,14 @@
 		3.使用命令./build_x264_arm64.sh  即可
 		
 	openssl编译
-		1.修改相关文件权限
-		2.直接运行./config文件，会在目录下生成Makefile文件
-		3.将SVN里的Makefile文件替换生成的文件，不要忘记修改ndk路径
-		4.直接运行make即可
+		1 执行Configure --openssldir=release no-asm no-shared android，生成Makefile
+		2 编辑修改Makefile文件，修改PLATFORM=android，修改CC、AR和RANLIB定义为对应的NDK文件路径,或者拷贝本文档当前目录下的openssl_android中的对应的Makefile并调整文件名
+		3 执行make，成功后当前目录下的include目录下包含后续使用的openssl头文件目录，当前目录下有相关的库文件libssl.a及libcrypto.a
+		4 各个平台配置参数:
+			armeabi, Configure --openssldir=release no-asm no-shared android
+			armv7a, Configure --openssldir=release no-shared android-armv7
+			armv64, Configure --openssldir=release no-asm no-shared linux-aarch64
+			x86, Configure --openssldir=release no-asm no-shared android-x86
+			x86_64, Configure --openssldir=release no-asm no-shared linux-x86_64
+			mips, Configure --openssldir=release no-asm no-shared android-mips
+			mips64, Configure --openssldir=release no-asm no-shared linux64-mips64
