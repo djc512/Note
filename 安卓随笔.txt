@@ -75,3 +75,10 @@
 			x86_64, Configure --openssldir=release no-asm no-shared linux-x86_64
 			mips, Configure --openssldir=release no-asm no-shared android-mips
 			mips64, Configure --openssldir=release no-asm no-shared linux64-mips64
+			
+	编译libyuv.a
+		1.使用FREYA进行编译
+		2.然后替换SDK yuv里的头文件
+	
+	Android.mk 文件中的TARGET_ARCH_ABI 对应的是Application.mk里的APP_ABI
+	适配64位时，代码里的32位&操作(0x0FFFFFFFF)都需要改成0x0FFFFFFFFFFFFFFFF  在强转的时候原来32位，在64位系统时会造成精度流失 如：long在32位系统是32位，64位系统就是64位
