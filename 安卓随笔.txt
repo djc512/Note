@@ -82,3 +82,12 @@
 	
 	Android.mk 文件中的TARGET_ARCH_ABI 对应的是Application.mk里的APP_ABI
 	适配64位时，代码里的32位&操作(0x0FFFFFFFF)都需要改成0x0FFFFFFFFFFFFFFFF  在强转的时候原来32位，在64位系统时会造成精度流失 如：long在32位系统是32位，64位系统就是64位
+	
+4.vivo手机在使用As安装失败
+	在gradle.properties文件中添加android.injected.testOnly = false
+
+5.观看端集成SDK
+	1.虽然使用ffmpeg.so  rtmp.so这些库但是要放到libs文件夹里面
+	2.rtmp.so 还需要使用System.loadlib进行依赖添加，ffmpeg.so就不需要添加了
+	3.SDK层不添加rtmp.so的依赖
+	4.观看端使用前需要先删除原来的build文件夹，然后再进行clean
