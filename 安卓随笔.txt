@@ -93,3 +93,133 @@
 	3.SDK层不添加rtmp.so的依赖
 	4.观看端使用前需要先删除原来的build文件夹，然后再进行clean
 	5.播放视频崩溃，回声消除，需要引入头文件jni_util.h文件
+	
+6.H265编码
+	
+static x265_param *pParam = NULL;
+static x265_encoder *pHandle = NULL;
+static x265_picture *pPic_in = NULL;
+
+char *i420UBuf = NULL;
+char *i420VBuf = NULL;
+
+static int64_t oldTs = 0;
+static int64_t encoderTs = 0;
+
+int x265_encoder(_HX264ENC hHandle,unsigned char ucNeedIFrame, unsigned char *pucInFrame, unsigned char *pucNalBuf[], unsigned int uiNalLen[], unsigned int *puiNalNum, unsigned char *pucFrameType)
+{
+    int i;
+    int j;
+    int y_size;
+    int buff_size;
+    int result = 0;
+    uint32_t iNal = 0;
+    int frame_num = 0;
+    int csp = X265_CSP_I420;
+    int width = 640, height = 480;
+    x265_nal *pNals;
+    if(NULL == pParam){
+        pParam = x265_param_alloc();
+        x265_param_default_preset(pParam, "ultrafast", "zerolatency");
+        printf("pParam  init");
+        pParam->bRepeatHeaders = 1;//write sps,pps before keyframe
+        pParam->internalCsp = csp;
+        pParam->sourceWidth = width;
+        pParam->sourceHeight = height;
+        pParam->internalBitDepth = 8;
+        pParam->fpsNum = 15;
+        pParam->fpsDenom = 1;
+
+        pParam->frameNumThreads = 0;
+        pParam->bframes = 0;
+        pParam->interlaceMode = 0;
+        pParam->rc.rateControlMode = X265_RC_ABR;
+        pParam->bEnableFastIntra = 1;
+        pParam->rc.bitrate = 512;
+        pParam->keyframeMax = 30;
+        pParam->rdLevel = 5;
+
+        pHandle = x265_encoder_open(pParam);
+        printf("pHandle  init");
+        if (pHandle == NULL) {
+            return -1;
+        }
+    }
+
+    if(NULL == pPic_in){
+        pPic_in = x265_picture_alloc();
+        x265_picture_init(pParam, pPic_in);
+        pPic_in->sliceType = X265_TYPE_IDR;
+        printf("pPic_in  init");
+    }else{
+    	 pPic_in->sliceType = X265_TYPE_AUTO;
+    }
+
+    y_size = pParam->sourceWidth * pParam->sourceHeight;
+    i420UBuf = (char *) malloc(y_size / 4);
+    i420VBuf = (char *) malloc(y_size / 4);
+
+    for (i = 0; i< y_size/2;i++) {
+        if(i%2 == 0){
+            memcpy(i420VBuf+i/2, pucInFrame + y_size + i, 1);
+        } else {
+            memcpy(i420UBuf+i/2, pucInFrame + y_size + i, 1);
+        }
+    }
+
+//    memcpy(buff, pucInFrame, y_szie);
+//    memcpy(i420UBuf, pucInFrame + y_size, y_szie/4);
+//    memcpy(i420VBuf, pucInFrame + y_size*5 / 4, y_szie/4);
+
+    pPic_in->planes[0] = pucInFrame;
+    pPic_in->planes[1] = i420UBuf;
+    pPic_in->planes[2] = i420VBuf;
+    pPic_in->stride[0] = width;
+    pPic_in->stride[1] = width / 2;
+    pPic_in->stride[2] = width / 2;
+
+    result = x265_encoder_encode(pHandle, &pNals, &iNal, pPic_in, NULL);
+
+    printf("result[%d]",result);
+    if(puiNalNum){
+       *puiNalNum = iNal;
+    }
+
+    for (j = 0; j < iNal; j++) {
+        pucNalBuf[j] = pNals[j].payload;
+        uiNalLen[j] = pNals[j].sizeBytes;
+        printf("111pucNalBuf[%s]",pucNalBuf[j]);
+        printf("111aaauiNalLen[%d]",uiNalLen[j]);
+        if(uiNalLen[j] >= 5){
+        	int index_tag = 0;
+        	if(pucNalBuf[j][2] == 1){
+        		index_tag = 4;
+        		char * iBuf = (char *) malloc(uiNalLen[j]+1);
+        		memcpy(iBuf+1, pucNalBuf[j], uiNalLen[j]);
+        		memset(iBuf,0,1);
+        		pucNalBuf[j] = iBuf;
+        		uiNalLen[j] = uiNalLen[j] + 1;
+        	}else{
+        		index_tag = 4;
+        	}
+			if(((pucNalBuf[j][index_tag] & 0x7e)/2 == 19 || (pucNalBuf[j][index_tag] & 0x7e)/2 == 20 || (pucNalBuf[j][index_tag] & 0x7e)/2 == 21)){
+				if(pucFrameType){
+				   printf("444pucFrameType == 1");
+				   pucFrameType[0] = 1;
+				}
+			}
+        }
+    }
+    free(i420UBuf);
+    free(i420VBuf);
+    return result;
+}
+
+7.编译64位SDK指针返回截短问题
+	SDK的指针为0x79db49a540但是返回到jni层就变成了0xFFFFFFFFdb49a540 指针前32位被重置了
+	查看这个链接https://blog.csdn.net/hiccupzhu/article/details/21326923
+	原因：在头文件中没有声明这个函数，只是在C文件中实现了，编译器生成了默认声明，并默认返回值为 integer。在32位时默认的是int是32位正常的，编译64位使用的是longlong就会出问题
+	解决方法：在这个函数调用的jni头文件再次声明。例如：GsStreamingPad* gs_encoder_create_streaming_pad(Encoder* enc);（主要是函数的头文件没有导进来）
+	解决思路：
+	1.先检查函数头文件是否导入
+	2.打印log查看数值
