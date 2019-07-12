@@ -223,3 +223,44 @@ int x265_encoder(_HX264ENC hHandle,unsigned char ucNeedIFrame, unsigned char *pu
 	解决思路：
 	1.先检查函数头文件是否导入
 	2.打印log查看数值
+	
+8.XML布局中，textview的text属性，仅在预览提示，不进行编译
+	tools:text属性
+	
+9.GridView或者ListView嵌套显示不全问题
+	public class MyGridView extends GridView{
+      public MyGridView(Context context, AttributeSet attrs) { 
+            super(context, attrs); 
+        } 
+
+        public MyGridView(Context context) { 
+            super(context); 
+        } 
+
+        public MyGridView(Context context, AttributeSet attrs, int defStyle) { 
+            super(context, attrs, defStyle); 
+        } 
+
+        @Override 
+        public void onMeasure(int widthMeasureSpec, int heightMeasureSpec) { 
+
+            int expandSpec = MeasureSpec.makeMeasureSpec(Integer.MAX_VALUE >> 2, 
+                    MeasureSpec.AT_MOST); 
+            super.onMeasure(widthMeasureSpec, expandSpec); 
+        } 
+	}
+	
+10.画折线图，热力图
+	echarts  官网：https://echarts.baidu.com/
+
+11.将一个集合的数据分成3个一组
+	   int toIndex=3;
+        for (int i = 0; i < list.size(); i+=3) {
+            DataBeanNew dataBeanNew = new DataBeanNew();
+            if(i+3 > list.size()){        //作用为toIndex最后没有100条数据则剩余几条newList中就装几条
+                toIndex = list.size() - i;
+            }
+            List newList = list.subList(i,i+toIndex);
+            dataBeanNew.setList(newList);
+            dataBeanNewList.add(dataBeanNew);
+        }
