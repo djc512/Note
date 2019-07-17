@@ -264,3 +264,14 @@ int x265_encoder(_HX264ENC hHandle,unsigned char ucNeedIFrame, unsigned char *pu
             dataBeanNew.setList(newList);
             dataBeanNewList.add(dataBeanNew);
         }
+12.List集合使用subList以后导致的问题
+	使用subList以后，如果对集合进行增删操作会导致并发修改异常。原理参考：https://www.cnblogs.com/xjk123/p/9700285.html
+	ArrayList<String> dataList = new ArrayList<>();
+	ArrayList<String> list = new ArrayList<>(dataList);
+	这两个集合里面的数据完全一样，但是所指的地址确不相同，可以作为避免并发修改异常的一种方式
+	
+13.List集合一遍遍历一遍删除
+	1.使用迭代器进行操作
+	2.倒序遍历，操作
+	参考网址：https://blog.csdn.net/zcyzsy/article/details/82790381
+	
