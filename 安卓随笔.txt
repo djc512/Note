@@ -282,4 +282,6 @@ int x265_encoder(_HX264ENC hHandle,unsigned char ucNeedIFrame, unsigned char *pu
 		1.定义一个页面收集类，在里面实现add,remove,finish所有页面的方法
 		2.定义BaseActivtyl类，添加到页面收集类里面，同时onDestory实现remove方法
 		3.所有BaseActivity的子类都默认添加到这个收集类集合中了。只需要调用finish方法即可关闭所有的页面
+		
+15.静态广播没发显示对话框，对话框的展示需要挂在在当前页面下，静态广播接收器只是一个单独的实体类，因此没法展示，动态广播是在当前activity下注册的，所以可以展示对话框
 	
