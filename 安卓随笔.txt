@@ -275,3 +275,11 @@ int x265_encoder(_HX264ENC hHandle,unsigned char ucNeedIFrame, unsigned char *pu
 	2.倒序遍历，操作
 	参考网址：https://blog.csdn.net/zcyzsy/article/details/82790381
 	
+14.只处理当页面在栈顶的逻辑
+	例如：广播的注册，不需要一直存在，当页面处于栈顶（onResume）注册，失去栈顶（onPause）解除注册
+	打开一个页面，则这个页面就处于栈顶，覆盖这个页面则移除栈顶，所以只需要在onResume与onPause这两个方法中处理即可
+	关闭所有的页面：
+		1.定义一个页面收集类，在里面实现add,remove,finish所有页面的方法
+		2.定义BaseActivtyl类，添加到页面收集类里面，同时onDestory实现remove方法
+		3.所有BaseActivity的子类都默认添加到这个收集类集合中了。只需要调用finish方法即可关闭所有的页面
+	
