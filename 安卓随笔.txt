@@ -285,3 +285,9 @@ int x265_encoder(_HX264ENC hHandle,unsigned char ucNeedIFrame, unsigned char *pu
 		
 15.静态广播没发显示对话框，对话框的展示需要挂在在当前页面下，静态广播接收器只是一个单独的实体类，因此没法展示，动态广播是在当前activity下注册的，所以可以展示对话框
 	
+
+16.ListView嵌套GridView
+	1.listView嵌套GridView处理数据源只需要listView刷新适配器，既可以同时刷新GriView的数据
+	2.加载更多数据时，将请求的数据，添加到数据源里面，刷新listView的适配器即可以同步刷新GridView的数据
+	
+	使用RecycleView可以通过holder.ietmView获取整个条目（itemView为RecycleView.ViewHolder提供的变量）
