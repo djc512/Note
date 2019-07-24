@@ -268,7 +268,7 @@ int x265_encoder(_HX264ENC hHandle,unsigned char ucNeedIFrame, unsigned char *pu
 	使用subList以后，如果对集合进行增删操作会导致并发修改异常。原理参考：https://www.cnblogs.com/xjk123/p/9700285.html
 	ArrayList<String> dataList = new ArrayList<>();
 	ArrayList<String> list = new ArrayList<>(dataList);
-	这两个集合里面的数据完全一样，但是所指的地址确不相同，可以作为避免并发修改异常的一种方式
+	这两个集合里面的数据完全一样，但是所指的地址确不相同，可以作为避免并发修改异常的一种方式	
 	
 13.List集合一遍遍历一遍删除
 	1.使用迭代器进行操作
@@ -284,10 +284,42 @@ int x265_encoder(_HX264ENC hHandle,unsigned char ucNeedIFrame, unsigned char *pu
 		3.所有BaseActivity的子类都默认添加到这个收集类集合中了。只需要调用finish方法即可关闭所有的页面
 		
 15.静态广播没发显示对话框，对话框的展示需要挂在在当前页面下，静态广播接收器只是一个单独的实体类，因此没法展示，动态广播是在当前activity下注册的，所以可以展示对话框
-	
 
 16.ListView嵌套GridView
 	1.listView嵌套GridView处理数据源只需要listView刷新适配器，既可以同时刷新GriView的数据
 	2.加载更多数据时，将请求的数据，添加到数据源里面，刷新listView的适配器即可以同步刷新GridView的数据
 	
 	使用RecycleView可以通过holder.ietmView获取整个条目（itemView为RecycleView.ViewHolder提供的变量）
+	
+	GridView最好屏蔽滑动事件，否则在加载更多数据时，会出现滑动冲突
+	
+17.安卓studio编译失败报错如下：
+
+	Error:Failed to resolve: appcompat-v7
+	Open File
+	Error:Failed to resolve: animated-vector-drawable
+	Open File
+	Error:Failed to resolve: support-vector-drawable
+	Open File
+	Error:Failed to resolve: support-v4
+	Open File
+	Error:Failed to resolve: support-media-compat
+	Open File
+	Error:Failed to resolve: support-fragment
+	Open File
+	Error:Failed to resolve: support-core-utils
+	Open File
+	Error:Failed to resolve: support-core-ui
+	Open File
+	Error:Failed to resolve: support-compat
+	Open File
+	Error:Failed to resolve: support-annotations
+	Open File
+	Error:Failed to resolve: runtime
+	Open File
+	Error:Failed to resolve: common
+	Open File
+	
+	解决方法：将项目的build.gradle文件下allprojects的google()移到首位，重新编译项目即可
+	
+18. <uses-sdk tools:overrideLibrary="com.huawei.android.hms.agent.push"/>写在清单文件<manifest>中
