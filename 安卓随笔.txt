@@ -323,3 +323,48 @@ int x265_encoder(_HX264ENC hHandle,unsigned char ucNeedIFrame, unsigned char *pu
 	解决方法：将项目的build.gradle文件下allprojects的google()移到首位，重新编译项目即可
 	
 18. <uses-sdk tools:overrideLibrary="com.huawei.android.hms.agent.push"/>写在清单文件<manifest>中
+
+19.TabLayout 标题栏使用注意事项
+	必须使用 android.support.design.widget.TabLayout这个库的TabLayout
+	
+20.Lottie使用注意事项
+	如果动画涉及到图片，必须将图片也放到assert文件里面，否则报错
+	
+21.radioGroup使用注意事项
+	radioGroup 如果使用除radioButton以外的控件，点击事件不起作用
+	
+22.ViewPager嵌套GridView与小圆点指示器联动
+
+	1.自定义View对象，通过inflate填充gridview组件
+	View view = LayoutInflater.from(this).inflate(R.layout.gv_item, null);
+	GridView gridView = view.findViewById(R.id.gv);
+	gridView.setAdapter(new MyItemAdapter(this, itemList));
+	gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+		@Override
+		public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+			Toast.makeText(MainActivity.this, "position: " + itemList2.get(position), Toast.LENGTH_SHORT).show();
+		}
+	});
+    list.add(view);
+	
+	2.小圆点指示器与ViewPager联动，添加到控件里的LinearLayout容器里面
+	ImageView iv_circle = new ImageView(this);
+	iv_circle.setImageResource(R.drawable.circle);
+	ll_container.addView(iv_circle);
+	LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) iv_circle.getLayoutParams();
+	params3.leftMargin = 96;
+	params3.rightMargin = 96;
+	iv_circle.setOnClickListener(new View.OnClickListener() {
+		@Override
+		public void onClick(View v) {
+			iv_circle1.setSelected(false);
+			iv_circle2.setSelected(false);
+			iv_circle3.setSelected(true);
+			vp.setCurrentItem(2);
+		}
+	});
+	iv_circle.setLayoutParams(params3);
+	circleList.add(iv_circle);
+	
+	3.ViewPager与小圆点联动
+	在ViewPager的滑动监听中，根据当前页面遍历小圆点集合，判断设置小圆点状态
