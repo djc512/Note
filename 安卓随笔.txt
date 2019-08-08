@@ -368,3 +368,19 @@ int x265_encoder(_HX264ENC hHandle,unsigned char ucNeedIFrame, unsigned char *pu
 	
 	3.ViewPager与小圆点联动
 	在ViewPager的滑动监听中，根据当前页面遍历小圆点集合，判断设置小圆点状态
+23.SparseArray与HashMap比较
+   1.用法一样都是通过put添加元素
+   2.SparseArray比HashMap更加节省内存，但是效率稍微慢一些
+   
+   SparseArray有两个优点：
+   1.避免了自动装箱（auto-boxing），
+   2.数据结构不会依赖于外部对象映射。
+   我们知道HashMap 采用一种所谓的“Hash 算法”来决定每个元素的存储位置，存放的都是数组元素的引用，通过每个对象的hash值来映射对象。
+   而SparseArray则是用数组数据结构来保存映射，然后通过折半查找来找到对象。但其实一般来说，SparseArray执行效率比HashMap要慢一点，因为查找需要折半查找，而添加删除则需要在数组中执行，而HashMap都是通过外部映射。
+   但相对来说影响不大，最主要是SparseArray不需要开辟内存空间来额外存储外部映射，从而节省内存。
+ 
+24.ScrollView悬浮标题
+	1.ScrolView要想实现滚动监听，需要在其子View里面实现
+	2.在子View中自定义接口，监听ScrollView滚动的距离
+	3.根据距离，使标题做动画效果进行展示与隐藏
+	4.可以通过getVisibility与View.VISIBLE,GONE,INVISIBLE比较，判断控件的显示状态
