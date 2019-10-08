@@ -1,3 +1,100 @@
+好的算法是最大可能的减少时间复杂度与空间复杂度
+时间复杂度：算法所用的时间
+空间复杂度：每一次计算所占用的临时内存空间
+1.给定一个整形数组，给定一个值，在数组中两个数，使他们的和等于给定的值，出去对应的角标，存到集合中
+public class Demo1 {
+    private int[] arr = {1,4,8,0,2,3,7};
+    private int value = 7;
+    private int[] result = new int[2];
+	//main-demo1Result: [1, 5]
+    public int[] getResult(){
+        HashMap<Integer,Integer> map = new HashMap<>();//用来存放数组的元素与角标
+        for (int i = 0; i < arr.length; i++) {
+            int index_value = arr[i];
+            int index_result = value - index_value;
+            if (map.containsKey(index_result)) {
+                result[0] = map.get(index_result);
+                result[1] = i;
+                break;
+            }else {
+                map.put(index_value,i);
+            }
+        }
+        return result;
+    }
+}
+	思路：1.遍历数组，取出元素，判断指定数值减去元素值的差值是否存在map里，如果存在说明已经找到，取出map中当前值对应的角标，不存在将当前值作为key，index作为value存到集合中
+		  2.好处是数组只需要遍历了一次，也不需要重复去取数值，即可完成查找
+		 
+		 
+2.public class Demo2 {
+    private int[] nums = {0, 1, 3, 50, 78,99};
+    private int lower = 0;
+    private int upper = 99;
+    private List<String> list = new ArrayList<>();
+
+    public List<String> getList() {
+        addToList(lower, nums[0] - 1);//先取出最小值，与数组的第一个元素
+        int pre = nums[0];//取出数组的第一个元素,当作起始值
+        int i = 1;
+        while (i < nums.length) {//遍历
+            int curr = nums[i];
+            if (pre != curr - 1) {//说明中间有数据，如果两个数之差不等于1，说明中间有元素
+                addToList(pre + 1, curr - 1);//将起始值加1，结束之减1，表示他们的中间值
+            }
+            pre = curr;//重新赋值起始值
+            i++;
+        }
+        addToList(nums[nums.length - 1] + 1, upper-1);
+        return list;
+    }
+    //输出结果  main-demo2Result: [2, 4->49, 51->77, 79->98]
+    private void addToList(int start, int end) {//再次判断起始值与结束值
+        if (start == end) {
+            list.add(String.valueOf(start));
+        } else if (start < end) {
+            list.add(start + "->" + end);
+        }
+    }
+
+    /**
+     * 1.先分析结果，发现是数组里面两个元素的中间数值，即起始值+1，结束值-1这个范围
+     * 2.遍历数组，如果两个临近的两个元素之差不等于1，说明符合要求
+     * 3.将符合要求的数据再次判断是否相等，按照不同的格式存放到集合里面
+     */
+}
+
+3.public class Demo3 {
+    private int[] arr = {1,3,6,5,7,9};
+    private int[] doubleArr = new int[arr.length*2];
+    private List<Integer> list = new ArrayList<>();
+
+    //[3, 6, 7, 7, 9]
+    public List<Integer> getNewArray() {
+        System.arraycopy(arr, 0, doubleArr, 0, arr.length);
+        System.arraycopy(arr, 0, doubleArr, arr.length, arr.length);
+
+        for (int i = 0; i < arr.length; i++) {
+            for (int j = i + 1; j < doubleArr.length; j++) {
+                if (arr[i] < doubleArr[j]) {
+                    list.add(doubleArr[j]);
+                    break;
+                }
+            }
+        }
+        return list;
+    }
+    /**
+     * 输出数组中下一个大于大于当前元素的值
+     * 1.创建一个当前集合长度2倍长度的数组double
+     * 2.遍历当前集合 single
+     * 3.比较double当前与下一个的大小
+     * 4.只需取出下一个大于当前角标对应值的元素
+     *
+     * 只需要比较当前元素与下一个元素，然后取出第一个大于当前元素的值即可
+     */
+}
+
 1.给定一个非空整数数组，除了某个元素只出现一次以外，其余每个元素均出现两次。找出那个只出现了一次的元素。
 private int[] arr = {1, 4, 2, 1, 2};
 public int getNum() {
