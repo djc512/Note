@@ -1,0 +1,557 @@
+1.解决自定义dialog四个角有黑边
+
+	final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+	View view = LayoutInflater.from(this).inflate(R.layout.live_cancle_explain_tip, null);
+	TextView tv_cancle = (TextView) view.findViewById(R.id.tv_cancle);
+	TextView tv_confirm = (TextView) view.findViewById(R.id.tv_confirm);
+	builder.setCancelable(false);
+	final AlertDialog alertDialog = builder.create();
+	alertDialog.setView(view);
+	alertDialog.show();
+
+	final WindowManager.LayoutParams params = alertDialog.getWindow().getAttributes();
+	params.width = CommUtil.getPixelsWidth(this)-CommUtil.dip2px(this,48);
+	alertDialog.getWindow().setAttributes(params);
+	alertDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+	tv_cancle.setOnClickListener(new OnClickListener() {
+		@Override
+		public void onClick(View v) {
+			alertDialog.dismiss();
+		}
+	});
+	
+2.安卓系统自带的下载功能，以及退出app继续下载
+
+	private void downloadAPK(String url, String name) {
+        //创建下载任务
+        request = new DownloadManager.Request(Uri.parse(url));
+        //移动网络情况下是否允许漫游
+        request.setAllowedOverRoaming(false);
+        //在通知栏中显示，默认就是显示的
+        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE);
+        request.setTitle("通知标题，随意修改");
+        request.setDescription("新版***下载中...");
+        request.setVisibleInDownloadsUi(true);
+
+        //设置下载的路径
+        File file = new File(mContext.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), name);
+        Log.i(TAG, "downloadAPK--path: "+file.getAbsolutePath());
+        request.setDestinationUri(Uri.fromFile(file));
+        pathstr = file.getAbsolutePath();
+        //获取DownloadManager
+        if (downloadManager == null)
+            downloadManager = (DownloadManager) mContext.getSystemService(Context.DOWNLOAD_SERVICE);
+        //将下载请求加入下载队列，加入下载队列后会给该任务返回一个long型的id，通过该id可以取消任务，重启任务、获取下载的文件等等
+        if (downloadManager != null) {
+            downloadId = downloadManager.enqueue(request);
+        }
+
+        //注册广播接收者，监听下载状态
+        mContext.registerReceiver(receiver,
+                new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+    }
+	
+	 //广播监听下载的各个状态
+    private BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            checkStatus();
+        }
+    };
+    //检查下载状态
+    private void checkStatus() {
+        DownloadManager.Query query = new DownloadManager.Query();
+        //通过下载的id查找
+        query.setFilterById(downloadId);
+        Cursor cursor = downloadManager.query(query);
+        if (cursor.moveToFirst()) {
+            int status = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS));
+            switch (status) {
+                //下载暂停
+                case DownloadManager.STATUS_PAUSED:
+                    break;
+                //下载延迟
+                case DownloadManager.STATUS_PENDING:
+                    break;
+                //正在下载
+                case DownloadManager.STATUS_RUNNING:
+                    break;
+                //下载完成
+                case DownloadManager.STATUS_SUCCESSFUL:
+                    request.setDescription("下载完成");
+                    //下载完成安装APK
+                    installAPK();
+                    cursor.close();
+                    break;
+                //下载失败
+                case DownloadManager.STATUS_FAILED:
+                    Toast.makeText(mContext, "下载失败", Toast.LENGTH_SHORT).show();
+                    cursor.close();
+                    mContext.unregisterReceiver(receiver);
+                    break;
+            }
+        }
+    }
+	
+	 private void installAPK() {
+        setPermission(pathstr);
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        // 由于没有在Activity环境下启动Activity,设置下面的标签
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        //Android 7.0以上要使用FileProvider
+        if (Build.VERSION.SDK_INT >= 24) {
+            File file = (new File(pathstr));
+            //参数1 上下文, 参数2 Provider主机地址 和配置文件中保持一致   参数3  共享的文件
+            Uri apkUri = FileProvider.getUriForFile(mContext, "com.test.demo.downloaddemo.fileprovider", file);
+            //添加这一句表示对目标应用临时授权该Uri所代表的文件
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            intent.setDataAndType(apkUri, "application/vnd.android.package-archive");
+        } else {
+            intent.setDataAndType(Uri.fromFile(new File(Environment.DIRECTORY_DOWNLOADS, name)), "application/vnd.android.package-archive");
+        }
+        mContext.startActivity(intent);
+    }
+
+    //修改文件权限
+    private void setPermission(String absolutePath) {
+        String command = "chmod " + "777" + " " + absolutePath;
+        Runtime runtime = Runtime.getRuntime();
+        try {
+            runtime.exec(command);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+	
+	如果要想实现退出应用以后，下载完成还可以自动安装，需要使用静态广播
+	<receiver android:name=".DownLoadCompleteReceiver">
+		<intent-filter>
+			<action android:name="android.intent.action.DOWNLOAD_COMPLETE" />
+		</intent-filter>
+	</receiver>
+	自定义静态广播 
+	注意事项：有些需要调用的局部变量，需要保存到本地，否则应用退出以后，自动安装找不到这个参数。有可能会无法自动弹出或者直接报错
+	
+	
+	下载进度监听 （广播只能监听下载完成）
+	 @Override
+    public void onResume() {
+        super.onResume();
+        //注册ContentObserver
+        getContentResolver().registerContentObserver(
+                Uri.parse("content://downloads/my_downloads"), true, downloadObserver);
+        Log.i(TAG, "onResume");
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        getContentResolver().unregisterContentObserver(downloadObserver);
+        Log.i(TAG, "onPause");
+    }
+	  private static final int DOWNLOAD_PROCESS = 0;
+    private Handler mHandle = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what) {
+                case DOWNLOAD_PROCESS:
+                    getBytesAndStatus();
+                    break;
+            }
+        }
+    };
+	private ContentObserver downloadObserver = new ContentObserver(mHandle) {
+        @RequiresApi(api = Build.VERSION_CODES.O)
+        @Override
+        public void onChange(boolean selfChange) {
+            super.onChange(selfChange);
+            mHandle.sendEmptyMessage(DOWNLOAD_PROCESS);
+        }
+    };
+	
+	   private int[] getBytesAndStatus() {
+        int[] bytesAndStatus = new int[]{-1, -1, 0};
+        DownloadManager.Query query = new DownloadManager.Query().setFilterById(DownloadUtils.downloadId);
+        Cursor cursor = null;
+        try {
+            cursor = DownloadUtils.downloadManager.query(query);
+            if (cursor != null && cursor.moveToFirst()) {
+                //已经下载文件大小
+                bytesAndStatus[0] = cursor.getInt(cursor.getColumnIndexOrThrow(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
+                //下载文件的总大小
+                bytesAndStatus[1] = cursor.getInt(cursor.getColumnIndexOrThrow(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
+                //下载状态
+                bytesAndStatus[2] = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS));
+
+                int progressSize = bytesAndStatus[0] / 1024 / 1024;
+                int totleSize = bytesAndStatus[1] / 1024 / 1024;
+                if (totleSize != 0) {
+                    Log.i("DJC", "getBytesAndStatus--progressLen * progressSize / totleSize: " + progressLen * progressSize / totleSize);
+                    my_progress.performeAnim(progressLen * progressSize / totleSize);
+                    cloud_download_percentage.setText((progressSize * 100 / totleSize) + "%");
+                }
+
+                if (bytesAndStatus[2] == 8) {
+                    layout_download_tip.setVisibility(View.GONE);
+                    cloud_download_percentage.setText("0%");
+                    my_progress.performeAnim(0);
+                }
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return bytesAndStatus;
+    }
+	
+3.安卓9.0，targetSDK28适配问题
+	1.java.lang.NoClassDefFoundError: Failed resolution of: Lorg/apache/http/params/BasicHttpParams;
+		原因： Apache Http 客户端弃用
+		因为早在 Android 6.0 中，谷歌取消了对 Apache Http 客户端的支持。从 Android 9.0 开始， org.apache.http.legacy 将从 bootclasspath 中删除。
+		在应用的 AndroidManifest.xml 文件的 <application> 中添加：
+		解决方法：
+		在应用的 AndroidManifest.xml 文件的 <application> 中添加：
+		<uses-library android:name="org.apache.http.legacy" android:required="false"/>
+		
+4.异或 << >>这些操作
+	对于二进制异或操作相同位置，相同为0，不同为1
+	1 ^ 0 = 1
+	1 ^ 1 = 0
+	0 ^ 0 = 0
+	非二进制
+	a ^ 0 = a
+	a ^ b = b ^ a
+	
+	a ^ c = b
+	a ^ b = a ^ a ^ c = c
+	
+	a ^ b 需要将a b 转换成二进制进行操作，然后将二进制转换成10进制
+	
+	2 << 3 向左移3位  2的二进制10  左移三位10000  转换十进制 16  直接套用公式 2* 2的3次方
+	
+	-10 << 2 负数左移2位  先按照10转换成二进制 1010
+	java里面负数的二进制  用补码表示  补码= 反码 +1 即-10的二进制位0101 + 1= 0110  
+	向左移2位011000 因为是补码需要减1 010111（二进制减法向上一位借1，如果是0一直借，原来的0变为1，1变为0） 转换成原码 101000 计算成十进制40  因为是负数所以为-40
+	
+	(a + b) >> 1 = (a + b)/2 除以二相当于右移1位
+
+5.网页浏览器通过url启动支付宝等第三方应用
+	// 使用localStorage则必须打开
+	webSettings.setDomStorageEnabled(true);
+	
+	Intent intent = Intent.parseUri(url, Intent.URI_INTENT_SCHEME);
+	intent.addCategory("android.intent.category.BROWSABLE");
+	intent.setComponent(null);
+	startActivity(intent);
+
+6.java多态
+	子类的多态属性只适用于父类的方法，不适合父类的属性
+	子类多态性的使用，是使用父类的引用，指向子类的对象，然后虚拟方法调用子类重写父类的方法
+	此外补充一下：子类对象的多态性，并不适用于属性
+	public class Person {
+		int id=101;
+		public void eat(){
+			System.out.println("人吃饭");
+		}
+	}
+	class Man extends Person{
+		int id=102;
+		public void eat(){
+			System.out.println("男人吃饭");
+		} 
+	}
+	public class Test {
+		public static void main(String[] args) {
+			  Person p=new Man();
+			  p.eat();
+			  System.out.println(p.id);//输出的是Person对象的id属性
+		}
+	}
+	
+	结果：男人吃饭   101
+7.Caused by: java.lang.IllegalStateException: Only fullscreen opaque activities can request orientation
+	解决办法：删除AndroidManifest中相应Activity的 android:screenOrientation=""属性；或者删除相应Activity的theme中<item name="android:windowIsTranslucent">true</item>属性。
+	
+8.浏览器启动app
+	<a href="myapp://jp.app/openwith?name=zhangsan&age=26">启动</a>
+	
+	 <intent-filter>
+		<action android:name="android.intent.action.VIEW"/>
+		<category android:name="android.intent.category.DEFAULT" />
+		<category android:name="android.intent.category.BROWSABLE" />
+		<data android:scheme="myapp" android:host="jp.app" android:pathPrefix="/openwith"/>
+	</intent-filter>
+	
+9.安卓传感器介绍
+	使用前先获取当前设备支持的传感器类型，有些旧手机只支持加速，对于线性加速度就有可能不支持
+	1.加速度传感器	TYPE_ACCELEROMETER
+		平放在桌子上z方向也会有个加速度，约为9.8，竖起来可能x或者y为9.8
+	2.磁场传感器	TYPE_MAGNETIC_FIELD
+		平放在桌子上x,y，z三个方向都会有数值一直在变化
+	3.方向传感器	TYPE_ORIENTATION
+		平放在桌子上x,y，z三个方向都会有数值一直在变化，但是x数值会比较到
+		现在谷歌的api已经过时了，具体参考网上的新使用方法
+	4.陀螺仪传感器	TYPE_GYROSCOPE
+		平放在桌子上x,y，z三个方向都会有数值一直在变化，但是数值一般为0.几
+	5.重力传感器	TYPE_GRAVITY
+		平放在桌子上有个方向会有个加速度，约为9.8，竖起来可能x或者y为9.8
+	6.线性加速度传感器	TYPE_LINEAR_ACCELERATION
+		平放在桌子上x,y，z方向会有个加速度,但是数值一般为0.几，去除了地球的重力加速度
+		
+10.app跳转微信公众号
+	普通的公众号无法跳转，只能是硬件公众号
+	参考文章https://www.jianshu.com/p/008acd59edcd
+	硬件公众号对接：https://iot.weixin.qq.com/wiki/new/index.html?page=1-1
+	
+11.service后台服务错误
+	android.app.RemoteServiceException: Bad notification for startForeground: java.lang.RuntimeException: invalid channel for service notification: Notification
+	Notification需要适配8.0
+	
+	if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+		 //修改安卓8.1以上系统报错
+		 NotificationChannel notificationChannel = new NotificationChannel("PROTECT_ID", "PROTECT_NAME",NotificationManager.IMPORTANCE_MIN);
+		 NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+		 manager.createNotificationChannel(notificationChannel);
+		 builder.setChannelId("PROTECT_ID");
+	}
+		Notification notification = builder.build();
+		startForeground(11111, notification);
+	
+	startForegroundService  在低版本手机会报错，需要进行版本判断。
+	升级为前台服务，8.0手机需要添加ChannelID与ChannelName
+
+12.安卓小数点处理
+	//使用0.00不足位补0，#.##仅保留有效位
+    String format = new DecimalFormat("0.00").format(num);
+	
+13.安卓RecycleView复用
+	如果条目中有CheckBox类型的按钮，需要设置Tag标签，否则会被复用
+	@Override
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, final int position) {
+        if (holder instanceof MyHolder) {
+            ((MyHolder) holder).tv.setText(data.get(position));
+            final Integer tag = new Integer(position);//初始化一个Integer实例，其值为position
+            ((MyHolder) holder).cb.setTag(tag);
+
+            if (deleteList.containsKey(tag)) {
+                ((MyHolder) holder).cb.setChecked(true);
+            } else {
+                ((MyHolder) holder).cb.setChecked(false);
+            }
+
+            ((MyHolder) holder).cb.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (deleteList.containsKey(tag)) {
+                        deleteList.remove(tag);
+                    } else {
+                        deleteList.put(tag, data.get(position));
+                    }
+                }
+            });
+        }
+    }
+	
+	如果不设置Tag，也要给每一个CheckBox设置一个唯一的标识，否则在滑动时，条目就会被复用，出现错乱
+
+14.异常之后代码的执行
+	如果一个条件语句里面抛出异常，则程序可以正常编译通过，以后的代码不会被执行
+
+15.判断手机底部是否有虚拟按钮
+
+	参看链接：https://www.jianshu.com/p/0f23fd29fec6
+	
+	/**
+	 * 判断虚拟导航栏是否显示  对于OPPO VIVO手机不起作用，默认一直有虚拟导航栏
+	 *
+	 * @param context 上下文对象
+	 * @return true(显示虚拟导航栏)，false(不显示或不支持虚拟导航栏)
+	 */
+	public static boolean checkNavigationBarShow(@NonNull Context context) {
+		boolean hasNavigationBar = false;
+		Resources rs = context.getResources();
+		int id = rs.getIdentifier("config_showNavigationBar", "bool", "android");
+		if (id > 0) {
+			hasNavigationBar = rs.getBoolean(id);
+		}
+		try {
+			Class systemPropertiesClass = Class.forName("android.os.SystemProperties");
+			Method m = systemPropertiesClass.getMethod("get", String.class);
+			String navBarOverride = (String) m.invoke(systemPropertiesClass, "qemu.hw.mainkeys");
+			//判断是否隐藏了底部虚拟导航
+			int navigationBarIsMin = 0;
+			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+				navigationBarIsMin = Settings.System.getInt(context.getContentResolver(),
+						"navigationbar_is_min", 0);
+			} else {
+				navigationBarIsMin = Settings.Global.getInt(context.getContentResolver(),
+						"navigationbar_is_min", 0);
+			}
+			if ("1".equals(navBarOverride) || 1 == navigationBarIsMin) {
+				hasNavigationBar = false;
+			} else if ("0".equals(navBarOverride)) {
+				hasNavigationBar = true;
+			}
+		} catch (Exception e) {
+		}
+		return hasNavigationBar;
+	
+	
+	//获取NavigationBar高度
+	public static int getNavigationBarHeight(Context context) {
+		Resources resources = context.getResources();
+		int resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android");
+		//获取NavigationBar的高度
+		int height = resources.getDimensionPixelSize(resourceId);
+		return height;
+	}
+	
+	//监听底部导航栏的显示与隐藏  有些手机如荣耀，onChange不起作用，所以需要版本判断
+	if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            getContentResolver().registerContentObserver(Settings.System.getUriFor
+                    ("navigationbar_is_min"), true, mNavigationStatusObserver);
+        } else {
+            getContentResolver().registerContentObserver(Settings.Global.getUriFor
+                    ("navigationbar_is_min"), true, mNavigationStatusObserver);
+        }
+	
+	getContentResolver().unregisterContentObserver(mNavigationStatusObserver);
+	
+	 private ContentObserver mNavigationStatusObserver = new ContentObserver(new Handler()) {
+        @Override
+        public void onChange(boolean selfChange) {
+
+            int navigationBarIsMin = 0;
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+                navigationBarIsMin = Settings.System.getInt(getContentResolver(),
+                        "navigationbar_is_min", 0);
+            } else {
+                navigationBarIsMin = Settings.Global.getInt(getContentResolver(),
+                        "navigationbar_is_min", 0);
+            }
+
+
+            if (navigationBarIsMin == 1) {
+                //导航键隐藏了
+               
+            } else {
+                //导航键显示了
+               
+            }
+            
+        }
+    };
+	
+	注意：OPPO,VIVO手机默认一直有虚拟导航，及时隐藏也默认存在，及时换成与IphoneXMAS一样的样式，默认还是有的，华为隐藏了虚拟导航就默认没了
+	
+16 Missing one of the key attributes 'action#name,category#name' on element intent-filter at AndroidManifest.xml:558:13-53
+	以下注释处为错误出现的地方：
+	<service
+		android:name="com.alipay.android.app.MspService"
+		android:exported="false"
+		android:process="com.alipay.sdk" >
+		<!--<intent-filter android:priority="800" />-->
+	</service>
+
+	intentFilter没有内容时候回出现此错误。删掉即可
+
+17. 安卓studio如果在编译过程中一直报一下错误：
+		Error:Failed to resolve: com.android.support:support-annotations:27.0.1 
+		Install Repository and sync project
+		Open File
+		Show in Project Structure dialog 
+	
+		点击"Install Repository and sync project",没反应，并且SDKManager已经下相对应的SDK
+		这个问题可以通过修改project的gradle，在jcenter()下面添加maven { url “https://maven.google.com” }即可
+		
+18. Suggestion: use tools:overrideLibrary="martin.viewer" to force usage
+		在AndroidManifest.xml文件中?标签中添加<uses-sdk tools:overrideLibrary="xxx.xxx.xxx"/>，其中的xxx.xxx.xxx为第三方库包名，
+		如果存在多个库有此异常，则用逗号分割它们，例如：<uses-sdk tools:overrideLibrary="xxx.xxx.aaa, xxx.xxx.bbb"/>，
+		这样做是为了项目中的AndroidManifest.xml和第三方库的AndroidManifest.xml合并时可以忽略最低版本限制。
+
+19. 单例模式造成的空指针
+	
+	静态变量被创建以后，就被存放在全局变量域中，除了静态变量之外的局部变量都存放于栈中
+	
+	static变量是指静态的变量，不管是在全局还是局部声明的static变量都存放于程序的全局变量区域，所以它的生命周期是从程序开始到程序结束。
+	但是static变量的作用域并不等同于它的生存周期，它的作用域决定于它被定义的位置。
+	可以认为static变量的作用域<=生存周期。
+	
+	对于安卓程序，声明单例创建的变量，生命周期伴随着程序的销毁而结束（测试发现，需要从后台完全杀死），并不会随着页面的销毁而结束，页面的销毁只是结束了变量的作用域。
+	程序未销毁时，下一次进入该页面，由于单例模式，不会去重新创建对象，继续引用上一次创建的变量（通过打印log发现，使用的还是同一个堆内存的地址）
+	因此以下写法要特别注意空指针：
+	public class Test {
+
+		public static Test test;
+		private final Student student;
+
+		private Test() {
+			student = new Student();
+		}
+		public static Test getInstance() {
+			Log.i(TAG, "Test: " + test);
+			if (test == null) {
+				test = new Test();
+			}
+			return test;
+		}
+	}
+	
+	student 变量不要随便置为空，使用时加空指针判断，否则很容易出现空指针异常
+	
+20. 部分手机debug版本加载动态库出现以下问题：
+		Detected problems with app native libraries(please consult log for detail:invalid DT_NEEDED:xxxxxx.so)
+		打开AndroidManifest.xml文件将 Application 的debugable = true改成debugable = false
+		
+21.	华为手机语言问题
+	1.华为手机系统获取系统语言
+		zh_CN#Hant	//繁体语言
+		zh_CN#Hans	//简体语言
+	2.小米手机获取语言
+		zh_CN	//简体语言
+		
+22.应用退到后台
+
+	override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        // 过滤按键动作，按返回键不退出程序，直接退到桌面
+        if (event!!.action == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_BACK) {
+            moveTaskToBack(true)//true对任何Activity都适用
+            return true
+        }
+        return super.onKeyDown(keyCode, event)
+    }
+	
+	注意：很遗憾的是没用，也试过其他方法，最后怀疑是启动模式的原因。最后检查了下，使用的是默认的启动模式。
+	思索良久，会不会是前一个Activity启动模式不对，
+	所以，导致任务栈里面有另一个Activity。于是 检查了下清单文件，果然。于是，将前一个Activity改为standard，一试，完成。
+	
+23.安卓字体不随系统发生变化
+
+   /*
+   *重写 getResource 方法，防止系统字体影响
+   */
+  @Override
+  public Resources getResources() {//禁止app字体大小跟随系统字体大小调节
+    Resources resources = super.getResources();
+    if (resources != null && resources.getConfiguration().fontScale != 1.0f) {
+      android.content.res.Configuration configuration = resources.getConfiguration();
+      configuration.fontScale = 1.0f;
+      resources.updateConfiguration(configuration, resources.getDisplayMetrics());
+    }
+    return resources;
+  }
+  
+ 24.微信一次性消息，无法返回app问题（调起的微信界面-WXEntryActivity，与不在app的任务栈中，导致返回有问题，无法返回自己的app）
+    微信有回调了(packagename).wxapi.WXEntryActivity的onResp方法吗？如果回调了，那就是已经跳转了。 在AndroidManifest.xml的WXEntryActivity中加入如下属性：
+	android:taskAffinity="your?packagename"
+	android:launchMode="singleTask" 保证跳转后回到你的app的task。
+	这样当回调WXEntryActivity类后其实就回到app了，这时候自己做处理就好，主要就是清单文件配置
+	
+	taskAffinity，可以翻译为任务相关性。这个参数标识了一个 Activity 所需要的任务栈的名字，默认情况下，所有 Activity 所需的任务栈的名字为应用的包名
+	当 Activity 设置了 taskAffinity 属性，那么这个 Activity 在被创建时就会运行在和 taskAffinity 名字相同的任务栈中，
+	如果没有，则新建 taskAffinity 指定的任务栈，并将 Activity 放入该栈中。
+	另外，taskAffinity 属性主要和 singleTask 或者 allowTaskReparenting 属性配对使用，在其他情况下没有意义。
+
+
