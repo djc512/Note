@@ -1,0 +1,336 @@
+JNIExPORT void JNICALL java_com_test01_Test_firstTest(JNIEnv *env,jobject obj);
+
+JNIEXPORT：在jni的编程中所有实现本地Jni接口的方法前面都有一个"JNIEXPORT"的标识，没什么用途，标识一个jni方法实现本地接口
+void：这个jni方法没有返回值
+JNICALL：表示jni调用(call)java_com_test01_Test_firstTest这个方法
+java_com_test01_Test_firstTest: java封装的native(本地)方法，在jni中调用需要 全类名+包名+方法名
+JNIEnv *env；env为Jni接口本身的一个总对象，再调用jni方法时使用。如：env->GetSuperclass();(获取类的父方法)
+jobject obj：jobject可以看做是java层调用firstTest()方法的对象。
+	如果java层firstTest()方法不是静态的，obj则相当于java这个类new出来的对象
+	如果java层firstTest()方法时静态的，obj则相当于java的这个类而不是创建出来的对象
+
+JNI中java中创建的对象，相当于C语言的指针，这个指针指向JVM的内部数据结构，而内部数据结构是不可见的。本地代码只能通过JNIEnv中选择合适的JNI函数来访问JVM的对象。
+
+1.常用的数据类型：基本数据类型，引用数据类型
+	基本数据类型：byte(jbyte),int(jint),long(jlong),short(jshort),float(jfloat),double(jdouble),char(jchar),boolean(jboolean)
+	所对应的签名：byte(B),int(I),short(S),long(J),float(F),double(D),boolean(Z),char(C)
+	
+	引用数据类型：String(jString),Class(jclass),Array(jArray{jObjectArray,jintArray,jlongArray,jbyteArray,jbooleanArray,jcharArray,jshoryArray,jfloatArray,jdoubleArray})
+	所对应的签名：String(Ljava/lang/String;)。即object(L+全类名)为此引用数据类型对应的签名
+	
+	void对应的签名：V
+	
+	type[]对应的签名：[type，例如int[]->[I   boolean[]->[Z
+	方法对应的签名：
+	没有返回值的方法对应的签名：public void get(int i,String str,boolean[] boo) -> (ILJava/lang/String;[Z)V
+	有返回值的签名：public String get(int i,boolean[] boo) -> (I[Z)Ljava/lang/String;
+					public int[] get(int i,boolean[] boo) -> (I[Z)[I
+					
+					如果是FindClass();-> FindClass(全类名(java/lang/String没有L));
+					如果是参数是String则参数为Ljava/lang/String有L的这种类型
+					
+2.使用UTF-8字符串
+	JNI中定义了UTF-8字符串以匹配JAVA虚拟机的字符串
+	UTF-8的一个字符创长度不固定,C语言使用一个字节表示ASCII字符
+	在JAVA虚拟机的UTF-8中对于单字节仍采用ASCII编码，表示字符的范围\u0001到\u0007,在内存中的存储为0xxxxxxx,单字节有效位数为7，第一位始终为0。因此在C语言中对于ASCII编码的字符串可以直接当做UTF-8字符串使用。
+	空字符串为\u0000表示
+	单字节在UTF-8中的表示	0xxxxxxx
+	双字节在UTF-8中的表示
+		高位：110xxxxx
+		地位：10yyyyyy
+		开头以11开始
+	三字节在UFT-8中的表示
+		高位：1110xxxx
+		中位：10yyyyyy
+		低位：10zzzzzz
+		开头以111开始
+	四字节在UTF-8中的表示
+		高位：1110xxxx
+		其他位：10yyyyyy
+		开头以1111开始
+		
+3.类与异常
+	
+	1.加载类
+		可以调用jni的jclass DefineClass(JNIEnv *env，const char *name,jobject loader,const jbyte *buf,jsize bufLen);方法加载类
+		name：类的全类名，必须是被UTF-8加载过的字符串
+		loader：类的加载器
+		buf；包含类数据的缓冲区，这个类包含一个原始数据，并且要求这个类在调用这个方法之前不能被JVM所引用
+		bufLen：包含类数据的缓冲区的长度
+		return：java对象，发生错误时返回NULL
+		可能会发生的异常
+			ClassFormatError：类格式错误
+			ClassCircularityError：类循环错误，如果一个类或者接口继承自己就会报这种错误
+			OutOfMemoryError：内存溢出
+			SecurityException：安全性错误，调用者在java包结构上定义一个类
+			
+	2.查找一个类
+		可以通过jni的jclass FindClass(JNIEnv *env，const char *name);进行查找
+		name：全类名。必须通过UTF-8的编码，分隔符使用/表示
+		return：java的对象。发生错误返回NULL
+	3.获取父类
+		Jni通过调用 jclass GetSuperclass(JNIEnv *env,jclass clazz);
+		clazz：需要查询类的对象
+		return：clazz的父类对象。如果clazz是Object对象或者是clazz的接口信息，返回NUll
+	4.类型转换
+		jni里面类进行类型转换之前，必须要保证类型转化是安全的
+		jni可以通过调用 jboolean IsAssignableFrom(JNIEnv *env,jclass clazz1,jclass clazz2);
+		clazz1：原始的类
+		clazz2：目标类型
+		return：当前类型转换是否安全，返回值为true表示类型相同，false类型不同
+		
+		例如：	A a = new A();
+				B extend A{};
+				B b = new B();
+				
+				A.class.isAssignableFrom(a.getClass())	返回值true
+				A.class.IsAssignableFrom(b.getClass())	返回值false
+				a.getClass().IsAssignableFrom(B.class)	返回值true
+				
+				B.class.IsAssignableFrom(b.getClass())	返回值true
+				B.class.IsAssignableFrom(A.getClass())  返回值false
+		
+		如果clazz2是clazz1的子类或者子接口都返回true
+		jobject是所有类的父类
+		
+4.Jni的引用类型
+	Jni总共可以分三种引用类型:全局引用，局部引用，弱全局引用
+	
+	全局引用：不受JVM的控制，可以全局使用，可以跨线程，可以跨方法(本地方法返回后仍可以使用)，需要手动进行释放，不会被GC回收
+	局部引用：受JVM管理的引用，被JVM分配管理，占用JVM的资源。局部引用在native方法返回后被JVM自动回收，不能跨线程，只能使用在创建的线程中
+	弱全局引用：很容易被JVM回收，如果一个对象只是被弱全局引用，则在GC触发的时候，就会被回收，指向NULL,所以如果一个弱全局引用指向NULL,说明被回收掉了
+	
+	全局引用
+		可以通过 调用jni的 jobject NewGlobalRef(JNIEnv *env,jobject obj);方法将任意一个引用变成全局引用
+		(*env)->NewGlobalRef();
+		
+		obj:任意的引用类型
+		return 全局引用，内存不足会返回NULL
+		
+		全局引用GC无回收，需要手动删除调用 void DeleteGlobalRef(JNIEnv *env,jobject globalRef);
+		globalRef：全局引用
+		(*env)-> DeleteGlobalRef();
+		
+	局部引用
+		可以调用JNI的 jobject NewLocalref(JNIEnv *env,jobject obj);创建一个局部引用
+		obj：任意引用类型的对象
+		return	局部引用
+		(*env)->NewLocalRef();
+		
+		局部引用在本地的native方法调用结束之后虽然会被GC自动回收，但是也可以通过手动进行删除
+		通过调用 void DeleteLocalRef(JNIEnv *env,jobject obj);进行删除
+		(*env)->DeleteLocalRef();
+		
+		JVM对局部引用进行资源分配，确保每一个本地的方法可以最少创建16个局部引用。但是如今远远不够使用。所以JNI提供了可用来查询可用局部引用容量的方法。
+		通过调用方法 jint EnsureLocalCapacity(JNIEnv *env,jint capacity);
+		capacity：设定的局部引用的容量
+		return：JNI_OK表示当前线程可以创建这么多的局部引用。返回其他容量不够用，并抛出OutOfMemoryError
+		
+		为了更方便的管理局部引用的生命周期，JNI提供了jint PushLocalFrame(JNIEnv *env,jint capacity)与
+		jobject PopLocalFrame(JNIEnv *env,jobject result)两个方法进行管理局部引用栈帧的入栈与出栈
+		在本地native方法开始调用前
+			调用JNI的(*env)->PushLocalFrame(env,capacity);局部栈帧的入栈
+			capacity：设定的局部引用的容量
+			return：JNI_OK表示当前线程可以创建这么多的局部引用。返回其他容量不够用，并抛出OutOfMemoryError
+		native方法调用结束后调用
+			调用JNI的 (*env)->PopLocalFrame(env,result);
+			result：需要保存栈帧的引用，如果不需要保存前一个栈帧可以传NULL
+			result: 前一个栈帧的引用，需要保存返回result,不需要返回NULL
+			
+	弱局部引用
+		很容易被GC回收，如果一个对象只被弱全局引用则GC触发，立即回收
+		可以通过JNi的 jobject NewWeakGlobalRef(JNIEnv *env,jobject obj);
+		obj：任意对象
+		result；返回的弱全局引用
+		
+		删除弱全局引用通过调用JNI的 void DeleteWeakGlobalRef(JNIEnv *env,jobject obj);
+		obj：弱全局引用
+		
+5.JNI对象操作	
+	const	是C语言的关键字，他限定一个变量不允许被改变。可以在一定程度上提升程序的安全性与可靠性
+	1.创建一个默认对象
+		如果一个类，不想通过默认的构造方法去创建一个对象,可以通过JNI的
+		jobject AllocObject(JNIEnv *env,jclass clazz);去创建一个对象(应该类似java通过反射去创建一个对象，Class.forName().instance())
+		env：JNI接口的指针，指向所有的JNI方法
+		clazz：需要创建对象的类,如果clazz没有构造方法会返回NULL
+		return：创建类的对象
+	2.创建对象
+		JNI的创建对象与Java类似，需要指定类的信息，选择合适的构造器传入合适的参数
+		
+		1.jobject NewObject(JNIEnv *env,jclass clazz,jmethodID methodID,...);
+		env：JNI接口的指针，指向相关的调用方法
+		clazz：需要创建对象的类
+		methodID：构造方法的ID,通过(*env)->GetMethodID(env,clazz,"<init>","()V");获取而且必须返回值为Void,方法名必须为<init>
+		...：可变参数的列表(应该是jint 或者jString 等一些参数)
+		
+		2.jobject NewObjectA(JNIEnv *env,jclass clazz,jmethodID methodID,const jvalue *args);
+		env：JNI接口的指针，指向相关的调用方法
+		clazz：需要创建对象的类
+		methodID：构造方法的ID
+		args：jvalue类型的数组。(用来存放传递的参数)
+		
+		3.jobject NewObjectV(JNIEnv *env,jclass clazz,jmethodID methodID,va_list args);
+		args：va_list类型的数组。(用来存放传递的参数列表)
+		
+	3.从对象中获取类
+		可以通过JNI的 jclass GetObjectClass(JNIEnv *env,jobject obj);
+		obj：类的对象
+		return：对象所对应的类
+		而 jclass FindClass(JNIEnv *env，const char *name);是通过全类名获取一个类
+	4.获取一个对象的引用是什么类型
+		jobjectRefType GetObjectRefType(JNIEnv *env,jobject obj);
+		obj：当前的对象
+		return	引用的类型(全局引用，局部引用，弱全局引用)
+		
+		这三种类型在jni.h中的定义：
+			typedef enum jobjectRefType{
+				JNIInvalidRefType = 0;无效引用
+				JNILocalRefType = 1;局部引用
+				JNIGlobalRefType = 2;全局引用
+				JNIWeakGlobalRefType = 3;弱全局引用
+			}jobjectRefType;
+	5.判断对象的类型
+		在java中可以通过instanceof判断一个对象的类型，在JNI中通过
+		jboolean IsInstanceOf(JNIEnv *env,jobject obj,jclass clazz);
+		return	true是这种类型，false不是
+		
+		(*env)->IsAssignableFrom判断两个类是否可以相互强转
+	6.判断两个对象是否相同( == )
+		java中通过 == 判断两个对象的地址是否相同，JNI中也可以通过判断地址是否相同，全局引用，局部引用，弱全局引用都可以使用
+		jboolean IsSampleObject(JNIEnv *env,jobject obj1,jobject obj2);
+	7.访问对象中的属性
+		在JNI中访问对象的属性，
+		首先要先获取这个属性的标识符ID，
+		通过(*env)->GetFieldID(JNIEnv *env,jclass clazz,const char *name,const char *sig);
+		clazz：访问的类
+		name：对象中的变量名,必须是通过UTF-8编码的变量名
+		sig：通过UTF-8编码的变量的标识符(B,I,S,C,J,F,Ljava/lang/String;,Z)->(byte,int,short,char,long,float,string,boolean)
+		return 变量的标识符 jfieldID
+		
+		然后依据标识符ID获取属性值，
+		通过JNI的(*env)->GetObjectField(JNIEnv *env,Jobject obj,jfieldID fieldID);(GetBooleanField,GetByteField,GetCharField...)
+		obj：访问的对象
+		fieldID：对象的标识符ID
+		
+		设置属性值
+		通过JNI的(*env)->SetObjectField(JNIEnv *env,jobject obj,jfieldID fieldID,value);
+		obj：对象
+		fieldID：变量的标识符
+		value：需要赋的值(jint int或者jstring string jboolean boolean...)
+	8.访问对象的方法
+		与访问属性的步骤一样
+		首先获取方法的标识符
+		通过JNI的jmethodID GetMedthodID(JNIEnv *env,jclass clazz,const char *name,const char *sig);
+		clazz:方法所在的类，可以通过GetObjectClass();或者FindClass();
+		name：通过UTF-8编码的方法名
+		sig：通过UTF-8编码的方法签名。
+		如：jstring getString(int i,String str,boolean[] boo);->(ILJava/lang/String;[Z)Ljava/lang/String;没有返回值为V
+		
+		调用实例方法
+		根据参数类型与返回值，JNI提供了三种不同的调用方法
+		NativeType Call<type>Method(JNIEnv *env,jobject obj,jmethodID methodID,...);
+		NativeType Call<type>MethodA(JNIEnv *env,jobject obj,jmethodID methodID,const jvalue *args);
+		NativeType Call<type>MethodV(JNIEnv *env,jobject obj,jmethodID methodID,const va_list args);
+		这三个方法的调用参考对象的创建
+		
+		通过JNI的
+		(*env)->CallVoidMethod(JNIEnv *env,jobject obj,jmethodID methodID,...);没有返回值
+		(*env)->CallVoidMethodA(JNIEnv *env,jobject obj,jmethodID methodID,jvalue *args);没有返回值
+		(*env)->CallVoidMethodV(JNIEnv *env,jobject obj,jmethodID methodID,va_list args);没有返回值
+		
+		(*env)->CallBooleanMethod(JNIEnv *env,jobject obj,jmethodID methodID,...);返回值为boolean类型
+		(*env)->CallIntMethod(JNIEnv *env,jobject obj,jmethodID methodID,...);返回值为int类型
+		...
+		
+	9.调用非虚实例的方法
+		在C语言中，让一个方法实现多态需要显示声明virtual关键字如：public virtual void G()，java中所有的方法默认都是virtual的。
+		如果C语言一个方法没有被声明virtual，则不能被子类继承
+		
+		非虚方法与虚方法的区别：虚方法可以被子类继承，非虚不能被继承，即虚方法具有多态的属性
+		
+		调用非虚方法：
+		NativeType CallNonvirtual<type>Method(JNIEnv *env, jobject obj, jclass clazz, jmethodID methodID, …);
+		NativeType CallNonvirtualA<type>MethodA(JNIEnv *env, jobject obj, jclass clazz, jmethodID methodID,jvalue *args);
+		NativeType CallNonvirtualV<type>MethodV(JNIEnv *env, jobject obj, jclass clazz, jmethodID methodID,va_list args);
+		
+		方法的调用与类的方法调用一样，先通过(*env)->GetMethodID(JNIEnv *env,jclass clazz,const char *name,const char *sig)获取methodID,然后再传入参数，调用相应的方法
+	
+	10.访问静态属性
+		与访问普通属性不同的，访问静态的属性不需要通过一个对象就可以访问，直接通过类就能访问
+		
+		首先获取这个静态属性的标识符(与普通的一样)
+		jfieldID GetStaticFieldID(JNIEnv *env,jclass clazz,const char *name,const char *sig);
+		然后通过标识符获取属性值
+		NativeType GetStatic<type>Field(JNIEnv *env,jclass clazz,jfieldID fieldID);
+		NativeType GetStaticIntField(...);	获取int属性的值
+		NativeType GetStaticBooleanField(...);	获取boolean类型
+		(jstring)(*env)->GetStaticObjectField(env,clazz,fieldID);	获取String类型的属性值
+		
+		设置属性值
+		void SetStatic<type>Field(JINEnv *env,jclass clazz,jfieldID fieldID,NativeType value);
+		void SetStaticObjectField(JINEnv *env,jclass clazz,jfieldID fieldID,NativeType value);
+		void SetStaticIntField(JINEnv *env,jclass clazz,jfieldID fieldID,NativeType value);
+		
+	11.访问静态方法
+		步骤与访问普通方法(静态属性)完全一致
+		
+	备注：JNI通过NewObject(),创建的对象为局部引用(Local Reference)，创建的局部引用会阻止GC对对象的回收，如果方法在返回java层之后，不在使用局部引用，就会被GC回收掉。
+	以下几种情况，虽然JVM会自动释放局部引用，但是还需要手动释放：
+		1.JNI会将创建的局部引用都存储在一个局部引用的列表中，Android上的JN局部引用表最大数量为512。如果本地需要创建大量的局部引用，而没有及时释放就会造成内存泄漏。
+			如：循环遍历一个特别大的字符串，遍历每一个元素都需要创建一个局部引用，如果不及时释放就会在成内存泄漏
+		2.JNI在函数中如果不手动调用删除方法，如果其他地方调用此函数的地方，就会再次被创建，会遗留两个被占用的空间，浪费内存
+		3.如果本地函数不会返回。比如一个接受消息的函数，里面有一个死循环，用于等待别人发消息，while(true)if(){}else{}里面创建，不手动删除就会在成内存泄漏
+		4.局部引用会阻止GC对对象的回收。如果一个本地函数刚开始需要访问一个大对象，因此一开始就会创建这个大对象的局部引用，但是在函数返回前会有一个非常复杂的计算，而
+		这个计算是不需要开始创建的那个大对象的引用，如果不手动释放，就会造成内存被占用，资源浪费，因此应该在复杂计算之前，将对象释放掉
+	
+		局部引用的生命周期：EnsureLocalCapacity、NewLocalRef、PushLocalFrame、PopLocalFrame、DeleteLocalRef这五个函数进行管理。JVM虚拟机默认支持本地应用创建16个局部引用
+		。但是对于现在的开发远远不够用。通过EnsureLocalCapacity，创建指定数量的引用，0创建成功，1创建失败。PushLocalFrame必须在局部引用创建前调用，为当前函数中需要用到的
+		局部引用创建一个引用栈，将创建的局部引用都放到这个栈中，如果当前已经已经创建了栈，在当前的本地引用栈中也可以直接使用。然后JVM会自动将改引用压入栈中。而本地函数返回之后
+		可以调用PopLocalFrame清空栈中的引用。不用在调用DeleteLocalRef进行删除。PopLocalRef的第二个参数result如果不为空，会由Result在生出一个新的局部引用，再把这个新的局部引用存储
+		在上一个创建的引用栈中
+6.字符串与数组
+	NewStringUTF()与GetStringUTFChars()的区别
+		NewStringUTF()是将C语言的String装换成java可以识别的String,通过函数调用返回给java使用
+		GetStringUTFChars()将jstring转换成C语言可以使用的String，在C代码中进行调用
+		如果函数是给Java层使用的则调用NewStringUTF(),如果是给C语言进行调用的则使用GetStringUTFChar()，调用此函数申请一个String使用的内存，如果JVM内存不够用会创建失败，返回NULL
+		因此需要进行判断NULL的逻辑。异常会在函数调用结束之后被抛出。但是不用之后需要释放内存调用ReleaseStringUTFChar()
+	GetStringUTFChars()与GetStringLength()区别
+		GetStringUTFChars()是处理UTF-8的字符串		
+		GetStringLength（）处理Unicode字符串，即UTF-16；
+		GetStringUTFLength()能被strlen()取代
+	jchar * GetStringChars(JNIEnv *env, jstring string,jboolean *isCopy);
+		isCopy，如果设置为true,说明返回值为原始数据的拷贝，可以进行随意的修改，不会对原始数据造成影响。如果返回为false说明这个字符指针指向原始数据的内存，不能随意修改，否则原始数据
+		也会被修改，这就会与java中字符串不能随意修改相冲突。我们只需传入NULL即可，JVM虚拟机会随机的去选择
+		
+	为了提升JVM返回指针的可能性，JDK1.2提供了void Get/ReleaseStringCritical(JNIEnv *env, jstring string, const jchar *carray);的方法。因为直接回去指针省去了复制的操作，提高了JVM的运行
+	效率。但是对于Get/ReleaseStringCritical()方法这两个函数之间有严格的限制，不能阻塞线程的操作，因此他们是运行在临界区的，即类似java的加锁里面的。至于为什么要加锁防止线程阻塞
+	因为通过JVM通过Get/ReleaseStringCritical()方法的到的字符串指针会禁用GC。如果Get/ReleaseStringCritical()之间有阻塞的话就会造成程序的中断。
+	1.因为只有当前线程触发的GC结束阻塞释放GC时，其他线程触发的GC才能有阻塞中释放并且继续运行
+	2.在这个过程中，当前线程会一直阻塞。因为任何阻塞都需要获取一个正被其他线程持有的锁，而其他线程正等待GC
+	
+	JNI数组
+		
+		在本地代码操作从java层传递的数组，首先将数组复制到C语言的缓冲区，然后在本地代码中操作缓冲区的数据
+		GetIntArrayRegion(JNIEnv *env,jobjectArray array,jint start,jint length,jobjectArray buf);
+		array：数组的指针
+		start：其实位置
+		length：缓冲区数组的长度
+		buf：缓冲区数组的指针
+		
+		JNI数组在处理基本类型与引用类型不同
+			基本数据类型可以使用缓冲区进行一次性复制多个元素。SetIntArrayRegion(),
+			GetIntArrayElement();获取的是一个指向数组元素的指针，也可以理解为指向一个数组的指针：jint *arr,操作类似java的数组。jint arr声明一个int类型的变量
+			
+			引用数据类型只能一个一个元素进行复制。SetObjectArrayElement();
+			
+			
+			
+
+			
+			
+
+ndk编译需要cd 到jni(.mk坐在的文件夹下)文件夹下，然后调用ndk-build
+
+		
+		
+		
