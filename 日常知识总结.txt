@@ -1,4 +1,4 @@
-1.½â¾ö×Ô¶¨ÒådialogËÄ¸ö½ÇÓĞºÚ±ß
+1.è§£å†³è‡ªå®šä¹‰dialogå››ä¸ªè§’æœ‰é»‘è¾¹
 
 	final AlertDialog.Builder builder = new AlertDialog.Builder(this);
 	View view = LayoutInflater.from(this).inflate(R.layout.live_cancle_explain_tip, null);
@@ -20,72 +20,72 @@
 		}
 	});
 	
-2.°²×¿ÏµÍ³×Ô´øµÄÏÂÔØ¹¦ÄÜ£¬ÒÔ¼°ÍË³öapp¼ÌĞøÏÂÔØ
+2.å®‰å“ç³»ç»Ÿè‡ªå¸¦çš„ä¸‹è½½åŠŸèƒ½ï¼Œä»¥åŠé€€å‡ºappç»§ç»­ä¸‹è½½
 
 	private void downloadAPK(String url, String name) {
-        //´´½¨ÏÂÔØÈÎÎñ
+        //åˆ›å»ºä¸‹è½½ä»»åŠ¡
         request = new DownloadManager.Request(Uri.parse(url));
-        //ÒÆ¶¯ÍøÂçÇé¿öÏÂÊÇ·ñÔÊĞíÂşÓÎ
+        //ç§»åŠ¨ç½‘ç»œæƒ…å†µä¸‹æ˜¯å¦å…è®¸æ¼«æ¸¸
         request.setAllowedOverRoaming(false);
-        //ÔÚÍ¨ÖªÀ¸ÖĞÏÔÊ¾£¬Ä¬ÈÏ¾ÍÊÇÏÔÊ¾µÄ
+        //åœ¨é€šçŸ¥æ ä¸­æ˜¾ç¤ºï¼Œé»˜è®¤å°±æ˜¯æ˜¾ç¤ºçš„
         request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE);
-        request.setTitle("Í¨Öª±êÌâ£¬ËæÒâĞŞ¸Ä");
-        request.setDescription("ĞÂ°æ***ÏÂÔØÖĞ...");
+        request.setTitle("é€šçŸ¥æ ‡é¢˜ï¼Œéšæ„ä¿®æ”¹");
+        request.setDescription("æ–°ç‰ˆ***ä¸‹è½½ä¸­...");
         request.setVisibleInDownloadsUi(true);
 
-        //ÉèÖÃÏÂÔØµÄÂ·¾¶
+        //è®¾ç½®ä¸‹è½½çš„è·¯å¾„
         File file = new File(mContext.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), name);
         Log.i(TAG, "downloadAPK--path: "+file.getAbsolutePath());
         request.setDestinationUri(Uri.fromFile(file));
         pathstr = file.getAbsolutePath();
-        //»ñÈ¡DownloadManager
+        //è·å–DownloadManager
         if (downloadManager == null)
             downloadManager = (DownloadManager) mContext.getSystemService(Context.DOWNLOAD_SERVICE);
-        //½«ÏÂÔØÇëÇó¼ÓÈëÏÂÔØ¶ÓÁĞ£¬¼ÓÈëÏÂÔØ¶ÓÁĞºó»á¸ø¸ÃÈÎÎñ·µ»ØÒ»¸ölongĞÍµÄid£¬Í¨¹ı¸Ãid¿ÉÒÔÈ¡ÏûÈÎÎñ£¬ÖØÆôÈÎÎñ¡¢»ñÈ¡ÏÂÔØµÄÎÄ¼şµÈµÈ
+        //å°†ä¸‹è½½è¯·æ±‚åŠ å…¥ä¸‹è½½é˜Ÿåˆ—ï¼ŒåŠ å…¥ä¸‹è½½é˜Ÿåˆ—åä¼šç»™è¯¥ä»»åŠ¡è¿”å›ä¸€ä¸ªlongå‹çš„idï¼Œé€šè¿‡è¯¥idå¯ä»¥å–æ¶ˆä»»åŠ¡ï¼Œé‡å¯ä»»åŠ¡ã€è·å–ä¸‹è½½çš„æ–‡ä»¶ç­‰ç­‰
         if (downloadManager != null) {
             downloadId = downloadManager.enqueue(request);
         }
 
-        //×¢²á¹ã²¥½ÓÊÕÕß£¬¼àÌıÏÂÔØ×´Ì¬
+        //æ³¨å†Œå¹¿æ’­æ¥æ”¶è€…ï¼Œç›‘å¬ä¸‹è½½çŠ¶æ€
         mContext.registerReceiver(receiver,
                 new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
     }
 	
-	 //¹ã²¥¼àÌıÏÂÔØµÄ¸÷¸ö×´Ì¬
+	 //å¹¿æ’­ç›‘å¬ä¸‹è½½çš„å„ä¸ªçŠ¶æ€
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             checkStatus();
         }
     };
-    //¼ì²éÏÂÔØ×´Ì¬
+    //æ£€æŸ¥ä¸‹è½½çŠ¶æ€
     private void checkStatus() {
         DownloadManager.Query query = new DownloadManager.Query();
-        //Í¨¹ıÏÂÔØµÄid²éÕÒ
+        //é€šè¿‡ä¸‹è½½çš„idæŸ¥æ‰¾
         query.setFilterById(downloadId);
         Cursor cursor = downloadManager.query(query);
         if (cursor.moveToFirst()) {
             int status = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS));
             switch (status) {
-                //ÏÂÔØÔİÍ£
+                //ä¸‹è½½æš‚åœ
                 case DownloadManager.STATUS_PAUSED:
                     break;
-                //ÏÂÔØÑÓ³Ù
+                //ä¸‹è½½å»¶è¿Ÿ
                 case DownloadManager.STATUS_PENDING:
                     break;
-                //ÕıÔÚÏÂÔØ
+                //æ­£åœ¨ä¸‹è½½
                 case DownloadManager.STATUS_RUNNING:
                     break;
-                //ÏÂÔØÍê³É
+                //ä¸‹è½½å®Œæˆ
                 case DownloadManager.STATUS_SUCCESSFUL:
-                    request.setDescription("ÏÂÔØÍê³É");
-                    //ÏÂÔØÍê³É°²×°APK
+                    request.setDescription("ä¸‹è½½å®Œæˆ");
+                    //ä¸‹è½½å®Œæˆå®‰è£…APK
                     installAPK();
                     cursor.close();
                     break;
-                //ÏÂÔØÊ§°Ü
+                //ä¸‹è½½å¤±è´¥
                 case DownloadManager.STATUS_FAILED:
-                    Toast.makeText(mContext, "ÏÂÔØÊ§°Ü", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext, "ä¸‹è½½å¤±è´¥", Toast.LENGTH_SHORT).show();
                     cursor.close();
                     mContext.unregisterReceiver(receiver);
                     break;
@@ -96,14 +96,14 @@
 	 private void installAPK() {
         setPermission(pathstr);
         Intent intent = new Intent(Intent.ACTION_VIEW);
-        // ÓÉÓÚÃ»ÓĞÔÚActivity»·¾³ÏÂÆô¶¯Activity,ÉèÖÃÏÂÃæµÄ±êÇ©
+        // ç”±äºæ²¡æœ‰åœ¨Activityç¯å¢ƒä¸‹å¯åŠ¨Activity,è®¾ç½®ä¸‹é¢çš„æ ‡ç­¾
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        //Android 7.0ÒÔÉÏÒªÊ¹ÓÃFileProvider
+        //Android 7.0ä»¥ä¸Šè¦ä½¿ç”¨FileProvider
         if (Build.VERSION.SDK_INT >= 24) {
             File file = (new File(pathstr));
-            //²ÎÊı1 ÉÏÏÂÎÄ, ²ÎÊı2 ProviderÖ÷»úµØÖ· ºÍÅäÖÃÎÄ¼şÖĞ±£³ÖÒ»ÖÂ   ²ÎÊı3  ¹²ÏíµÄÎÄ¼ş
+            //å‚æ•°1 ä¸Šä¸‹æ–‡, å‚æ•°2 Providerä¸»æœºåœ°å€ å’Œé…ç½®æ–‡ä»¶ä¸­ä¿æŒä¸€è‡´   å‚æ•°3  å…±äº«çš„æ–‡ä»¶
             Uri apkUri = FileProvider.getUriForFile(mContext, "com.test.demo.downloaddemo.fileprovider", file);
-            //Ìí¼ÓÕâÒ»¾ä±íÊ¾¶ÔÄ¿±êÓ¦ÓÃÁÙÊ±ÊÚÈ¨¸ÃUriËù´ú±íµÄÎÄ¼ş
+            //æ·»åŠ è¿™ä¸€å¥è¡¨ç¤ºå¯¹ç›®æ ‡åº”ç”¨ä¸´æ—¶æˆæƒè¯¥Uriæ‰€ä»£è¡¨çš„æ–‡ä»¶
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             intent.setDataAndType(apkUri, "application/vnd.android.package-archive");
         } else {
@@ -112,7 +112,7 @@
         mContext.startActivity(intent);
     }
 
-    //ĞŞ¸ÄÎÄ¼şÈ¨ÏŞ
+    //ä¿®æ”¹æ–‡ä»¶æƒé™
     private void setPermission(String absolutePath) {
         String command = "chmod " + "777" + " " + absolutePath;
         Runtime runtime = Runtime.getRuntime();
@@ -123,21 +123,21 @@
         }
     }
 	
-	Èç¹ûÒªÏëÊµÏÖÍË³öÓ¦ÓÃÒÔºó£¬ÏÂÔØÍê³É»¹¿ÉÒÔ×Ô¶¯°²×°£¬ĞèÒªÊ¹ÓÃ¾²Ì¬¹ã²¥
+	å¦‚æœè¦æƒ³å®ç°é€€å‡ºåº”ç”¨ä»¥åï¼Œä¸‹è½½å®Œæˆè¿˜å¯ä»¥è‡ªåŠ¨å®‰è£…ï¼Œéœ€è¦ä½¿ç”¨é™æ€å¹¿æ’­
 	<receiver android:name=".DownLoadCompleteReceiver">
 		<intent-filter>
 			<action android:name="android.intent.action.DOWNLOAD_COMPLETE" />
 		</intent-filter>
 	</receiver>
-	×Ô¶¨Òå¾²Ì¬¹ã²¥ 
-	×¢ÒâÊÂÏî£ºÓĞĞ©ĞèÒªµ÷ÓÃµÄ¾Ö²¿±äÁ¿£¬ĞèÒª±£´æµ½±¾µØ£¬·ñÔòÓ¦ÓÃÍË³öÒÔºó£¬×Ô¶¯°²×°ÕÒ²»µ½Õâ¸ö²ÎÊı¡£ÓĞ¿ÉÄÜ»áÎŞ·¨×Ô¶¯µ¯³ö»òÕßÖ±½Ó±¨´í
+	è‡ªå®šä¹‰é™æ€å¹¿æ’­ 
+	æ³¨æ„äº‹é¡¹ï¼šæœ‰äº›éœ€è¦è°ƒç”¨çš„å±€éƒ¨å˜é‡ï¼Œéœ€è¦ä¿å­˜åˆ°æœ¬åœ°ï¼Œå¦åˆ™åº”ç”¨é€€å‡ºä»¥åï¼Œè‡ªåŠ¨å®‰è£…æ‰¾ä¸åˆ°è¿™ä¸ªå‚æ•°ã€‚æœ‰å¯èƒ½ä¼šæ— æ³•è‡ªåŠ¨å¼¹å‡ºæˆ–è€…ç›´æ¥æŠ¥é”™
 	
 	
-	ÏÂÔØ½ø¶È¼àÌı £¨¹ã²¥Ö»ÄÜ¼àÌıÏÂÔØÍê³É£©
+	ä¸‹è½½è¿›åº¦ç›‘å¬ ï¼ˆå¹¿æ’­åªèƒ½ç›‘å¬ä¸‹è½½å®Œæˆï¼‰
 	 @Override
     public void onResume() {
         super.onResume();
-        //×¢²áContentObserver
+        //æ³¨å†ŒContentObserver
         getContentResolver().registerContentObserver(
                 Uri.parse("content://downloads/my_downloads"), true, downloadObserver);
         Log.i(TAG, "onResume");
@@ -177,11 +177,11 @@
         try {
             cursor = DownloadUtils.downloadManager.query(query);
             if (cursor != null && cursor.moveToFirst()) {
-                //ÒÑ¾­ÏÂÔØÎÄ¼ş´óĞ¡
+                //å·²ç»ä¸‹è½½æ–‡ä»¶å¤§å°
                 bytesAndStatus[0] = cursor.getInt(cursor.getColumnIndexOrThrow(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
-                //ÏÂÔØÎÄ¼şµÄ×Ü´óĞ¡
+                //ä¸‹è½½æ–‡ä»¶çš„æ€»å¤§å°
                 bytesAndStatus[1] = cursor.getInt(cursor.getColumnIndexOrThrow(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
-                //ÏÂÔØ×´Ì¬
+                //ä¸‹è½½çŠ¶æ€
                 bytesAndStatus[2] = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS));
 
                 int progressSize = bytesAndStatus[0] / 1024 / 1024;
@@ -206,39 +206,39 @@
         return bytesAndStatus;
     }
 	
-3.°²×¿9.0£¬targetSDK28ÊÊÅäÎÊÌâ
+3.å®‰å“9.0ï¼ŒtargetSDK28é€‚é…é—®é¢˜
 	1.java.lang.NoClassDefFoundError: Failed resolution of: Lorg/apache/http/params/BasicHttpParams;
-		Ô­Òò£º Apache Http ¿Í»§¶ËÆúÓÃ
-		ÒòÎªÔçÔÚ Android 6.0 ÖĞ£¬¹È¸èÈ¡ÏûÁË¶Ô Apache Http ¿Í»§¶ËµÄÖ§³Ö¡£´Ó Android 9.0 ¿ªÊ¼£¬ org.apache.http.legacy ½«´Ó bootclasspath ÖĞÉ¾³ı¡£
-		ÔÚÓ¦ÓÃµÄ AndroidManifest.xml ÎÄ¼şµÄ <application> ÖĞÌí¼Ó£º
-		½â¾ö·½·¨£º
-		ÔÚÓ¦ÓÃµÄ AndroidManifest.xml ÎÄ¼şµÄ <application> ÖĞÌí¼Ó£º
+		åŸå› ï¼š Apache Http å®¢æˆ·ç«¯å¼ƒç”¨
+		å› ä¸ºæ—©åœ¨ Android 6.0 ä¸­ï¼Œè°·æ­Œå–æ¶ˆäº†å¯¹ Apache Http å®¢æˆ·ç«¯çš„æ”¯æŒã€‚ä» Android 9.0 å¼€å§‹ï¼Œ org.apache.http.legacy å°†ä» bootclasspath ä¸­åˆ é™¤ã€‚
+		åœ¨åº”ç”¨çš„ AndroidManifest.xml æ–‡ä»¶çš„ <application> ä¸­æ·»åŠ ï¼š
+		è§£å†³æ–¹æ³•ï¼š
+		åœ¨åº”ç”¨çš„ AndroidManifest.xml æ–‡ä»¶çš„ <application> ä¸­æ·»åŠ ï¼š
 		<uses-library android:name="org.apache.http.legacy" android:required="false"/>
 		
-4.Òì»ò << >>ÕâĞ©²Ù×÷
-	¶ÔÓÚ¶ş½øÖÆÒì»ò²Ù×÷ÏàÍ¬Î»ÖÃ£¬ÏàÍ¬Îª0£¬²»Í¬Îª1
+4.å¼‚æˆ– << >>è¿™äº›æ“ä½œ
+	å¯¹äºäºŒè¿›åˆ¶å¼‚æˆ–æ“ä½œç›¸åŒä½ç½®ï¼Œç›¸åŒä¸º0ï¼Œä¸åŒä¸º1
 	1 ^ 0 = 1
 	1 ^ 1 = 0
 	0 ^ 0 = 0
-	·Ç¶ş½øÖÆ
+	éäºŒè¿›åˆ¶
 	a ^ 0 = a
 	a ^ b = b ^ a
 	
 	a ^ c = b
 	a ^ b = a ^ a ^ c = c
 	
-	a ^ b ĞèÒª½«a b ×ª»»³É¶ş½øÖÆ½øĞĞ²Ù×÷£¬È»ºó½«¶ş½øÖÆ×ª»»³É10½øÖÆ
+	a ^ b éœ€è¦å°†a b è½¬æ¢æˆäºŒè¿›åˆ¶è¿›è¡Œæ“ä½œï¼Œç„¶åå°†äºŒè¿›åˆ¶è½¬æ¢æˆ10è¿›åˆ¶
 	
-	2 << 3 Ïò×óÒÆ3Î»  2µÄ¶ş½øÖÆ10  ×óÒÆÈıÎ»10000  ×ª»»Ê®½øÖÆ 16  Ö±½ÓÌ×ÓÃ¹«Ê½ 2* 2µÄ3´Î·½
+	2 << 3 å‘å·¦ç§»3ä½  2çš„äºŒè¿›åˆ¶10  å·¦ç§»ä¸‰ä½10000  è½¬æ¢åè¿›åˆ¶ 16  ç›´æ¥å¥—ç”¨å…¬å¼ 2* 2çš„3æ¬¡æ–¹
 	
-	-10 << 2 ¸ºÊı×óÒÆ2Î»  ÏÈ°´ÕÕ10×ª»»³É¶ş½øÖÆ 1010
-	javaÀïÃæ¸ºÊıµÄ¶ş½øÖÆ  ÓÃ²¹Âë±íÊ¾  ²¹Âë= ·´Âë +1 ¼´-10µÄ¶ş½øÖÆÎ»0101 + 1= 0110  
-	Ïò×óÒÆ2Î»011000 ÒòÎªÊÇ²¹ÂëĞèÒª¼õ1 010111£¨¶ş½øÖÆ¼õ·¨ÏòÉÏÒ»Î»½è1£¬Èç¹ûÊÇ0Ò»Ö±½è£¬Ô­À´µÄ0±äÎª1£¬1±äÎª0£© ×ª»»³ÉÔ­Âë 101000 ¼ÆËã³ÉÊ®½øÖÆ40  ÒòÎªÊÇ¸ºÊıËùÒÔÎª-40
+	-10 << 2 è´Ÿæ•°å·¦ç§»2ä½  å…ˆæŒ‰ç…§10è½¬æ¢æˆäºŒè¿›åˆ¶ 1010
+	javaé‡Œé¢è´Ÿæ•°çš„äºŒè¿›åˆ¶  ç”¨è¡¥ç è¡¨ç¤º  è¡¥ç = åç  +1 å³-10çš„äºŒè¿›åˆ¶ä½0101 + 1= 0110  
+	å‘å·¦ç§»2ä½011000 å› ä¸ºæ˜¯è¡¥ç éœ€è¦å‡1 010111ï¼ˆäºŒè¿›åˆ¶å‡æ³•å‘ä¸Šä¸€ä½å€Ÿ1ï¼Œå¦‚æœæ˜¯0ä¸€ç›´å€Ÿï¼ŒåŸæ¥çš„0å˜ä¸º1ï¼Œ1å˜ä¸º0ï¼‰ è½¬æ¢æˆåŸç  101000 è®¡ç®—æˆåè¿›åˆ¶40  å› ä¸ºæ˜¯è´Ÿæ•°æ‰€ä»¥ä¸º-40
 	
-	(a + b) >> 1 = (a + b)/2 ³ıÒÔ¶şÏàµ±ÓÚÓÒÒÆ1Î»
+	(a + b) >> 1 = (a + b)/2 é™¤ä»¥äºŒç›¸å½“äºå³ç§»1ä½
 
-5.ÍøÒ³ä¯ÀÀÆ÷Í¨¹ıurlÆô¶¯Ö§¸¶±¦µÈµÚÈı·½Ó¦ÓÃ
-	// Ê¹ÓÃlocalStorageÔò±ØĞë´ò¿ª
+5.ç½‘é¡µæµè§ˆå™¨é€šè¿‡urlå¯åŠ¨æ”¯ä»˜å®ç­‰ç¬¬ä¸‰æ–¹åº”ç”¨
+	// ä½¿ç”¨localStorageåˆ™å¿…é¡»æ‰“å¼€
 	webSettings.setDomStorageEnabled(true);
 	
 	Intent intent = Intent.parseUri(url, Intent.URI_INTENT_SCHEME);
@@ -246,36 +246,36 @@
 	intent.setComponent(null);
 	startActivity(intent);
 
-6.java¶àÌ¬
-	×ÓÀàµÄ¶àÌ¬ÊôĞÔÖ»ÊÊÓÃÓÚ¸¸ÀàµÄ·½·¨£¬²»ÊÊºÏ¸¸ÀàµÄÊôĞÔ
-	×ÓÀà¶àÌ¬ĞÔµÄÊ¹ÓÃ£¬ÊÇÊ¹ÓÃ¸¸ÀàµÄÒıÓÃ£¬Ö¸Ïò×ÓÀàµÄ¶ÔÏó£¬È»ºóĞéÄâ·½·¨µ÷ÓÃ×ÓÀàÖØĞ´¸¸ÀàµÄ·½·¨
-	´ËÍâ²¹³äÒ»ÏÂ£º×ÓÀà¶ÔÏóµÄ¶àÌ¬ĞÔ£¬²¢²»ÊÊÓÃÓÚÊôĞÔ
+6.javaå¤šæ€
+	å­ç±»çš„å¤šæ€å±æ€§åªé€‚ç”¨äºçˆ¶ç±»çš„æ–¹æ³•ï¼Œä¸é€‚åˆçˆ¶ç±»çš„å±æ€§
+	å­ç±»å¤šæ€æ€§çš„ä½¿ç”¨ï¼Œæ˜¯ä½¿ç”¨çˆ¶ç±»çš„å¼•ç”¨ï¼ŒæŒ‡å‘å­ç±»çš„å¯¹è±¡ï¼Œç„¶åè™šæ‹Ÿæ–¹æ³•è°ƒç”¨å­ç±»é‡å†™çˆ¶ç±»çš„æ–¹æ³•
+	æ­¤å¤–è¡¥å……ä¸€ä¸‹ï¼šå­ç±»å¯¹è±¡çš„å¤šæ€æ€§ï¼Œå¹¶ä¸é€‚ç”¨äºå±æ€§
 	public class Person {
 		int id=101;
 		public void eat(){
-			System.out.println("ÈË³Ô·¹");
+			System.out.println("äººåƒé¥­");
 		}
 	}
 	class Man extends Person{
 		int id=102;
 		public void eat(){
-			System.out.println("ÄĞÈË³Ô·¹");
+			System.out.println("ç”·äººåƒé¥­");
 		} 
 	}
 	public class Test {
 		public static void main(String[] args) {
 			  Person p=new Man();
 			  p.eat();
-			  System.out.println(p.id);//Êä³öµÄÊÇPerson¶ÔÏóµÄidÊôĞÔ
+			  System.out.println(p.id);//è¾“å‡ºçš„æ˜¯Personå¯¹è±¡çš„idå±æ€§
 		}
 	}
 	
-	½á¹û£ºÄĞÈË³Ô·¹   101
+	ç»“æœï¼šç”·äººåƒé¥­   101
 7.Caused by: java.lang.IllegalStateException: Only fullscreen opaque activities can request orientation
-	½â¾ö°ì·¨£ºÉ¾³ıAndroidManifestÖĞÏàÓ¦ActivityµÄ android:screenOrientation=""ÊôĞÔ£»»òÕßÉ¾³ıÏàÓ¦ActivityµÄthemeÖĞ<item name="android:windowIsTranslucent">true</item>ÊôĞÔ¡£
+	è§£å†³åŠæ³•ï¼šåˆ é™¤AndroidManifestä¸­ç›¸åº”Activityçš„ android:screenOrientation=""å±æ€§ï¼›æˆ–è€…åˆ é™¤ç›¸åº”Activityçš„themeä¸­<item name="android:windowIsTranslucent">true</item>å±æ€§ã€‚
 	
-8.ä¯ÀÀÆ÷Æô¶¯app
-	<a href="myapp://jp.app/openwith?name=zhangsan&age=26">Æô¶¯</a>
+8.æµè§ˆå™¨å¯åŠ¨app
+	<a href="myapp://jp.app/openwith?name=zhangsan&age=26">å¯åŠ¨</a>
 	
 	 <intent-filter>
 		<action android:name="android.intent.action.VIEW"/>
@@ -284,33 +284,33 @@
 		<data android:scheme="myapp" android:host="jp.app" android:pathPrefix="/openwith"/>
 	</intent-filter>
 	
-9.°²×¿´«¸ĞÆ÷½éÉÜ
-	Ê¹ÓÃÇ°ÏÈ»ñÈ¡µ±Ç°Éè±¸Ö§³ÖµÄ´«¸ĞÆ÷ÀàĞÍ£¬ÓĞĞ©¾ÉÊÖ»úÖ»Ö§³Ö¼ÓËÙ£¬¶ÔÓÚÏßĞÔ¼ÓËÙ¶È¾ÍÓĞ¿ÉÄÜ²»Ö§³Ö
-	1.¼ÓËÙ¶È´«¸ĞÆ÷	TYPE_ACCELEROMETER
-		Æ½·ÅÔÚ×À×ÓÉÏz·½ÏòÒ²»áÓĞ¸ö¼ÓËÙ¶È£¬Ô¼Îª9.8£¬ÊúÆğÀ´¿ÉÄÜx»òÕßyÎª9.8
-	2.´Å³¡´«¸ĞÆ÷	TYPE_MAGNETIC_FIELD
-		Æ½·ÅÔÚ×À×ÓÉÏx,y£¬zÈı¸ö·½Ïò¶¼»áÓĞÊıÖµÒ»Ö±ÔÚ±ä»¯
-	3.·½Ïò´«¸ĞÆ÷	TYPE_ORIENTATION
-		Æ½·ÅÔÚ×À×ÓÉÏx,y£¬zÈı¸ö·½Ïò¶¼»áÓĞÊıÖµÒ»Ö±ÔÚ±ä»¯£¬µ«ÊÇxÊıÖµ»á±È½Ïµ½
-		ÏÖÔÚ¹È¸èµÄapiÒÑ¾­¹ıÊ±ÁË£¬¾ßÌå²Î¿¼ÍøÉÏµÄĞÂÊ¹ÓÃ·½·¨
-	4.ÍÓÂİÒÇ´«¸ĞÆ÷	TYPE_GYROSCOPE
-		Æ½·ÅÔÚ×À×ÓÉÏx,y£¬zÈı¸ö·½Ïò¶¼»áÓĞÊıÖµÒ»Ö±ÔÚ±ä»¯£¬µ«ÊÇÊıÖµÒ»°ãÎª0.¼¸
-	5.ÖØÁ¦´«¸ĞÆ÷	TYPE_GRAVITY
-		Æ½·ÅÔÚ×À×ÓÉÏÓĞ¸ö·½Ïò»áÓĞ¸ö¼ÓËÙ¶È£¬Ô¼Îª9.8£¬ÊúÆğÀ´¿ÉÄÜx»òÕßyÎª9.8
-	6.ÏßĞÔ¼ÓËÙ¶È´«¸ĞÆ÷	TYPE_LINEAR_ACCELERATION
-		Æ½·ÅÔÚ×À×ÓÉÏx,y£¬z·½Ïò»áÓĞ¸ö¼ÓËÙ¶È,µ«ÊÇÊıÖµÒ»°ãÎª0.¼¸£¬È¥³ıÁËµØÇòµÄÖØÁ¦¼ÓËÙ¶È
+9.å®‰å“ä¼ æ„Ÿå™¨ä»‹ç»
+	ä½¿ç”¨å‰å…ˆè·å–å½“å‰è®¾å¤‡æ”¯æŒçš„ä¼ æ„Ÿå™¨ç±»å‹ï¼Œæœ‰äº›æ—§æ‰‹æœºåªæ”¯æŒåŠ é€Ÿï¼Œå¯¹äºçº¿æ€§åŠ é€Ÿåº¦å°±æœ‰å¯èƒ½ä¸æ”¯æŒ
+	1.åŠ é€Ÿåº¦ä¼ æ„Ÿå™¨	TYPE_ACCELEROMETER
+		å¹³æ”¾åœ¨æ¡Œå­ä¸Šzæ–¹å‘ä¹Ÿä¼šæœ‰ä¸ªåŠ é€Ÿåº¦ï¼Œçº¦ä¸º9.8ï¼Œç«–èµ·æ¥å¯èƒ½xæˆ–è€…yä¸º9.8
+	2.ç£åœºä¼ æ„Ÿå™¨	TYPE_MAGNETIC_FIELD
+		å¹³æ”¾åœ¨æ¡Œå­ä¸Šx,yï¼Œzä¸‰ä¸ªæ–¹å‘éƒ½ä¼šæœ‰æ•°å€¼ä¸€ç›´åœ¨å˜åŒ–
+	3.æ–¹å‘ä¼ æ„Ÿå™¨	TYPE_ORIENTATION
+		å¹³æ”¾åœ¨æ¡Œå­ä¸Šx,yï¼Œzä¸‰ä¸ªæ–¹å‘éƒ½ä¼šæœ‰æ•°å€¼ä¸€ç›´åœ¨å˜åŒ–ï¼Œä½†æ˜¯xæ•°å€¼ä¼šæ¯”è¾ƒåˆ°
+		ç°åœ¨è°·æ­Œçš„apiå·²ç»è¿‡æ—¶äº†ï¼Œå…·ä½“å‚è€ƒç½‘ä¸Šçš„æ–°ä½¿ç”¨æ–¹æ³•
+	4.é™€èºä»ªä¼ æ„Ÿå™¨	TYPE_GYROSCOPE
+		å¹³æ”¾åœ¨æ¡Œå­ä¸Šx,yï¼Œzä¸‰ä¸ªæ–¹å‘éƒ½ä¼šæœ‰æ•°å€¼ä¸€ç›´åœ¨å˜åŒ–ï¼Œä½†æ˜¯æ•°å€¼ä¸€èˆ¬ä¸º0.å‡ 
+	5.é‡åŠ›ä¼ æ„Ÿå™¨	TYPE_GRAVITY
+		å¹³æ”¾åœ¨æ¡Œå­ä¸Šæœ‰ä¸ªæ–¹å‘ä¼šæœ‰ä¸ªåŠ é€Ÿåº¦ï¼Œçº¦ä¸º9.8ï¼Œç«–èµ·æ¥å¯èƒ½xæˆ–è€…yä¸º9.8
+	6.çº¿æ€§åŠ é€Ÿåº¦ä¼ æ„Ÿå™¨	TYPE_LINEAR_ACCELERATION
+		å¹³æ”¾åœ¨æ¡Œå­ä¸Šx,yï¼Œzæ–¹å‘ä¼šæœ‰ä¸ªåŠ é€Ÿåº¦,ä½†æ˜¯æ•°å€¼ä¸€èˆ¬ä¸º0.å‡ ï¼Œå»é™¤äº†åœ°çƒçš„é‡åŠ›åŠ é€Ÿåº¦
 		
-10.appÌø×ªÎ¢ĞÅ¹«ÖÚºÅ
-	ÆÕÍ¨µÄ¹«ÖÚºÅÎŞ·¨Ìø×ª£¬Ö»ÄÜÊÇÓ²¼ş¹«ÖÚºÅ
-	²Î¿¼ÎÄÕÂhttps://www.jianshu.com/p/008acd59edcd
-	Ó²¼ş¹«ÖÚºÅ¶Ô½Ó£ºhttps://iot.weixin.qq.com/wiki/new/index.html?page=1-1
+10.appè·³è½¬å¾®ä¿¡å…¬ä¼—å·
+	æ™®é€šçš„å…¬ä¼—å·æ— æ³•è·³è½¬ï¼Œåªèƒ½æ˜¯ç¡¬ä»¶å…¬ä¼—å·
+	å‚è€ƒæ–‡ç« https://www.jianshu.com/p/008acd59edcd
+	ç¡¬ä»¶å…¬ä¼—å·å¯¹æ¥ï¼šhttps://iot.weixin.qq.com/wiki/new/index.html?page=1-1
 	
-11.serviceºóÌ¨·şÎñ´íÎó
+11.serviceåå°æœåŠ¡é”™è¯¯
 	android.app.RemoteServiceException: Bad notification for startForeground: java.lang.RuntimeException: invalid channel for service notification: Notification
-	NotificationĞèÒªÊÊÅä8.0
+	Notificationéœ€è¦é€‚é…8.0
 	
 	if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-		 //ĞŞ¸Ä°²×¿8.1ÒÔÉÏÏµÍ³±¨´í
+		 //ä¿®æ”¹å®‰å“8.1ä»¥ä¸Šç³»ç»ŸæŠ¥é”™
 		 NotificationChannel notificationChannel = new NotificationChannel("PROTECT_ID", "PROTECT_NAME",NotificationManager.IMPORTANCE_MIN);
 		 NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 		 manager.createNotificationChannel(notificationChannel);
@@ -319,20 +319,20 @@
 		Notification notification = builder.build();
 		startForeground(11111, notification);
 	
-	startForegroundService  ÔÚµÍ°æ±¾ÊÖ»ú»á±¨´í£¬ĞèÒª½øĞĞ°æ±¾ÅĞ¶Ï¡£
-	Éı¼¶ÎªÇ°Ì¨·şÎñ£¬8.0ÊÖ»úĞèÒªÌí¼ÓChannelIDÓëChannelName
+	startForegroundService  åœ¨ä½ç‰ˆæœ¬æ‰‹æœºä¼šæŠ¥é”™ï¼Œéœ€è¦è¿›è¡Œç‰ˆæœ¬åˆ¤æ–­ã€‚
+	å‡çº§ä¸ºå‰å°æœåŠ¡ï¼Œ8.0æ‰‹æœºéœ€è¦æ·»åŠ ChannelIDä¸ChannelName
 
-12.°²×¿Ğ¡Êıµã´¦Àí
-	//Ê¹ÓÃ0.00²»×ãÎ»²¹0£¬#.##½ö±£ÁôÓĞĞ§Î»
+12.å®‰å“å°æ•°ç‚¹å¤„ç†
+	//ä½¿ç”¨0.00ä¸è¶³ä½è¡¥0ï¼Œ#.##ä»…ä¿ç•™æœ‰æ•ˆä½
     String format = new DecimalFormat("0.00").format(num);
 	
-13.°²×¿RecycleView¸´ÓÃ
-	Èç¹ûÌõÄ¿ÖĞÓĞCheckBoxÀàĞÍµÄ°´Å¥£¬ĞèÒªÉèÖÃTag±êÇ©£¬·ñÔò»á±»¸´ÓÃ
+13.å®‰å“RecycleViewå¤ç”¨
+	å¦‚æœæ¡ç›®ä¸­æœ‰CheckBoxç±»å‹çš„æŒ‰é’®ï¼Œéœ€è¦è®¾ç½®Tagæ ‡ç­¾ï¼Œå¦åˆ™ä¼šè¢«å¤ç”¨
 	@Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, final int position) {
         if (holder instanceof MyHolder) {
             ((MyHolder) holder).tv.setText(data.get(position));
-            final Integer tag = new Integer(position);//³õÊ¼»¯Ò»¸öIntegerÊµÀı£¬ÆäÖµÎªposition
+            final Integer tag = new Integer(position);//åˆå§‹åŒ–ä¸€ä¸ªIntegerå®ä¾‹ï¼Œå…¶å€¼ä¸ºposition
             ((MyHolder) holder).cb.setTag(tag);
 
             if (deleteList.containsKey(tag)) {
@@ -354,20 +354,20 @@
         }
     }
 	
-	Èç¹û²»ÉèÖÃTag£¬Ò²Òª¸øÃ¿Ò»¸öCheckBoxÉèÖÃÒ»¸öÎ¨Ò»µÄ±êÊ¶£¬·ñÔòÔÚ»¬¶¯Ê±£¬ÌõÄ¿¾Í»á±»¸´ÓÃ£¬³öÏÖ´íÂÒ
+	å¦‚æœä¸è®¾ç½®Tagï¼Œä¹Ÿè¦ç»™æ¯ä¸€ä¸ªCheckBoxè®¾ç½®ä¸€ä¸ªå”¯ä¸€çš„æ ‡è¯†ï¼Œå¦åˆ™åœ¨æ»‘åŠ¨æ—¶ï¼Œæ¡ç›®å°±ä¼šè¢«å¤ç”¨ï¼Œå‡ºç°é”™ä¹±
 
-14.Òì³£Ö®ºó´úÂëµÄÖ´ĞĞ
-	Èç¹ûÒ»¸öÌõ¼şÓï¾äÀïÃæÅ×³öÒì³££¬Ôò³ÌĞò¿ÉÒÔÕı³£±àÒëÍ¨¹ı£¬ÒÔºóµÄ´úÂë²»»á±»Ö´ĞĞ
+14.å¼‚å¸¸ä¹‹åä»£ç çš„æ‰§è¡Œ
+	å¦‚æœä¸€ä¸ªæ¡ä»¶è¯­å¥é‡Œé¢æŠ›å‡ºå¼‚å¸¸ï¼Œåˆ™ç¨‹åºå¯ä»¥æ­£å¸¸ç¼–è¯‘é€šè¿‡ï¼Œä»¥åçš„ä»£ç ä¸ä¼šè¢«æ‰§è¡Œ
 
-15.ÅĞ¶ÏÊÖ»úµ×²¿ÊÇ·ñÓĞĞéÄâ°´Å¥
+15.åˆ¤æ–­æ‰‹æœºåº•éƒ¨æ˜¯å¦æœ‰è™šæ‹ŸæŒ‰é’®
 
-	²Î¿´Á´½Ó£ºhttps://www.jianshu.com/p/0f23fd29fec6
+	å‚çœ‹é“¾æ¥ï¼šhttps://www.jianshu.com/p/0f23fd29fec6
 	
 	/**
-	 * ÅĞ¶ÏĞéÄâµ¼º½À¸ÊÇ·ñÏÔÊ¾  ¶ÔÓÚOPPO VIVOÊÖ»ú²»Æğ×÷ÓÃ£¬Ä¬ÈÏÒ»Ö±ÓĞĞéÄâµ¼º½À¸
+	 * åˆ¤æ–­è™šæ‹Ÿå¯¼èˆªæ æ˜¯å¦æ˜¾ç¤º  å¯¹äºOPPO VIVOæ‰‹æœºä¸èµ·ä½œç”¨ï¼Œé»˜è®¤ä¸€ç›´æœ‰è™šæ‹Ÿå¯¼èˆªæ 
 	 *
-	 * @param context ÉÏÏÂÎÄ¶ÔÏó
-	 * @return true(ÏÔÊ¾ĞéÄâµ¼º½À¸)£¬false(²»ÏÔÊ¾»ò²»Ö§³ÖĞéÄâµ¼º½À¸)
+	 * @param context ä¸Šä¸‹æ–‡å¯¹è±¡
+	 * @return true(æ˜¾ç¤ºè™šæ‹Ÿå¯¼èˆªæ )ï¼Œfalse(ä¸æ˜¾ç¤ºæˆ–ä¸æ”¯æŒè™šæ‹Ÿå¯¼èˆªæ )
 	 */
 	public static boolean checkNavigationBarShow(@NonNull Context context) {
 		boolean hasNavigationBar = false;
@@ -380,7 +380,7 @@
 			Class systemPropertiesClass = Class.forName("android.os.SystemProperties");
 			Method m = systemPropertiesClass.getMethod("get", String.class);
 			String navBarOverride = (String) m.invoke(systemPropertiesClass, "qemu.hw.mainkeys");
-			//ÅĞ¶ÏÊÇ·ñÒş²ØÁËµ×²¿ĞéÄâµ¼º½
+			//åˆ¤æ–­æ˜¯å¦éšè—äº†åº•éƒ¨è™šæ‹Ÿå¯¼èˆª
 			int navigationBarIsMin = 0;
 			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
 				navigationBarIsMin = Settings.System.getInt(context.getContentResolver(),
@@ -399,16 +399,16 @@
 		return hasNavigationBar;
 	
 	
-	//»ñÈ¡NavigationBar¸ß¶È
+	//è·å–NavigationBaré«˜åº¦
 	public static int getNavigationBarHeight(Context context) {
 		Resources resources = context.getResources();
 		int resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android");
-		//»ñÈ¡NavigationBarµÄ¸ß¶È
+		//è·å–NavigationBarçš„é«˜åº¦
 		int height = resources.getDimensionPixelSize(resourceId);
 		return height;
 	}
 	
-	//¼àÌıµ×²¿µ¼º½À¸µÄÏÔÊ¾ÓëÒş²Ø  ÓĞĞ©ÊÖ»úÈçÈÙÒ«£¬onChange²»Æğ×÷ÓÃ£¬ËùÒÔĞèÒª°æ±¾ÅĞ¶Ï
+	//ç›‘å¬åº•éƒ¨å¯¼èˆªæ çš„æ˜¾ç¤ºä¸éšè—  æœ‰äº›æ‰‹æœºå¦‚è£è€€ï¼ŒonChangeä¸èµ·ä½œç”¨ï¼Œæ‰€ä»¥éœ€è¦ç‰ˆæœ¬åˆ¤æ–­
 	if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             getContentResolver().registerContentObserver(Settings.System.getUriFor
                     ("navigationbar_is_min"), true, mNavigationStatusObserver);
@@ -434,20 +434,20 @@
 
 
             if (navigationBarIsMin == 1) {
-                //µ¼º½¼üÒş²ØÁË
+                //å¯¼èˆªé”®éšè—äº†
                
             } else {
-                //µ¼º½¼üÏÔÊ¾ÁË
+                //å¯¼èˆªé”®æ˜¾ç¤ºäº†
                
             }
             
         }
     };
 	
-	×¢Òâ£ºOPPO,VIVOÊÖ»úÄ¬ÈÏÒ»Ö±ÓĞĞéÄâµ¼º½£¬¼°Ê±Òş²ØÒ²Ä¬ÈÏ´æÔÚ£¬¼°Ê±»»³ÉÓëIphoneXMASÒ»ÑùµÄÑùÊ½£¬Ä¬ÈÏ»¹ÊÇÓĞµÄ£¬»ªÎªÒş²ØÁËĞéÄâµ¼º½¾ÍÄ¬ÈÏÃ»ÁË
+	æ³¨æ„ï¼šOPPO,VIVOæ‰‹æœºé»˜è®¤ä¸€ç›´æœ‰è™šæ‹Ÿå¯¼èˆªï¼ŒåŠæ—¶éšè—ä¹Ÿé»˜è®¤å­˜åœ¨ï¼ŒåŠæ—¶æ¢æˆä¸IphoneXMASä¸€æ ·çš„æ ·å¼ï¼Œé»˜è®¤è¿˜æ˜¯æœ‰çš„ï¼Œåä¸ºéšè—äº†è™šæ‹Ÿå¯¼èˆªå°±é»˜è®¤æ²¡äº†
 	
 16 Missing one of the key attributes 'action#name,category#name' on element intent-filter at AndroidManifest.xml:558:13-53
-	ÒÔÏÂ×¢ÊÍ´¦Îª´íÎó³öÏÖµÄµØ·½£º
+	ä»¥ä¸‹æ³¨é‡Šå¤„ä¸ºé”™è¯¯å‡ºç°çš„åœ°æ–¹ï¼š
 	<service
 		android:name="com.alipay.android.app.MspService"
 		android:exported="false"
@@ -455,33 +455,33 @@
 		<!--<intent-filter android:priority="800" />-->
 	</service>
 
-	intentFilterÃ»ÓĞÄÚÈİÊ±ºò»Ø³öÏÖ´Ë´íÎó¡£É¾µô¼´¿É
+	intentFilteræ²¡æœ‰å†…å®¹æ—¶å€™å›å‡ºç°æ­¤é”™è¯¯ã€‚åˆ æ‰å³å¯
 
-17. °²×¿studioÈç¹ûÔÚ±àÒë¹ı³ÌÖĞÒ»Ö±±¨Ò»ÏÂ´íÎó£º
+17. å®‰å“studioå¦‚æœåœ¨ç¼–è¯‘è¿‡ç¨‹ä¸­ä¸€ç›´æŠ¥ä¸€ä¸‹é”™è¯¯ï¼š
 		Error:Failed to resolve: com.android.support:support-annotations:27.0.1 
 		Install Repository and sync project
 		Open File
 		Show in Project Structure dialog 
 	
-		µã»÷"Install Repository and sync project",Ã»·´Ó¦£¬²¢ÇÒSDKManagerÒÑ¾­ÏÂÏà¶ÔÓ¦µÄSDK
-		Õâ¸öÎÊÌâ¿ÉÒÔÍ¨¹ıĞŞ¸ÄprojectµÄgradle£¬ÔÚjcenter()ÏÂÃæÌí¼Ómaven { url ¡°https://maven.google.com¡± }¼´¿É
+		ç‚¹å‡»"Install Repository and sync project",æ²¡ååº”ï¼Œå¹¶ä¸”SDKManagerå·²ç»ä¸‹ç›¸å¯¹åº”çš„SDK
+		è¿™ä¸ªé—®é¢˜å¯ä»¥é€šè¿‡ä¿®æ”¹projectçš„gradleï¼Œåœ¨jcenter()ä¸‹é¢æ·»åŠ maven { url â€œhttps://maven.google.comâ€ }å³å¯
 		
 18. Suggestion: use tools:overrideLibrary="martin.viewer" to force usage
-		ÔÚAndroidManifest.xmlÎÄ¼şÖĞ?±êÇ©ÖĞÌí¼Ó<uses-sdk tools:overrideLibrary="xxx.xxx.xxx"/>£¬ÆäÖĞµÄxxx.xxx.xxxÎªµÚÈı·½¿â°üÃû£¬
-		Èç¹û´æÔÚ¶à¸ö¿âÓĞ´ËÒì³££¬ÔòÓÃ¶ººÅ·Ö¸îËüÃÇ£¬ÀıÈç£º<uses-sdk tools:overrideLibrary="xxx.xxx.aaa, xxx.xxx.bbb"/>£¬
-		ÕâÑù×öÊÇÎªÁËÏîÄ¿ÖĞµÄAndroidManifest.xmlºÍµÚÈı·½¿âµÄAndroidManifest.xmlºÏ²¢Ê±¿ÉÒÔºöÂÔ×îµÍ°æ±¾ÏŞÖÆ¡£
+		åœ¨AndroidManifest.xmlæ–‡ä»¶ä¸­?æ ‡ç­¾ä¸­æ·»åŠ <uses-sdk tools:overrideLibrary="xxx.xxx.xxx"/>ï¼Œå…¶ä¸­çš„xxx.xxx.xxxä¸ºç¬¬ä¸‰æ–¹åº“åŒ…åï¼Œ
+		å¦‚æœå­˜åœ¨å¤šä¸ªåº“æœ‰æ­¤å¼‚å¸¸ï¼Œåˆ™ç”¨é€—å·åˆ†å‰²å®ƒä»¬ï¼Œä¾‹å¦‚ï¼š<uses-sdk tools:overrideLibrary="xxx.xxx.aaa, xxx.xxx.bbb"/>ï¼Œ
+		è¿™æ ·åšæ˜¯ä¸ºäº†é¡¹ç›®ä¸­çš„AndroidManifest.xmlå’Œç¬¬ä¸‰æ–¹åº“çš„AndroidManifest.xmlåˆå¹¶æ—¶å¯ä»¥å¿½ç•¥æœ€ä½ç‰ˆæœ¬é™åˆ¶ã€‚
 
-19. µ¥ÀıÄ£Ê½Ôì³ÉµÄ¿ÕÖ¸Õë
+19. å•ä¾‹æ¨¡å¼é€ æˆçš„ç©ºæŒ‡é’ˆ
 	
-	¾²Ì¬±äÁ¿±»´´½¨ÒÔºó£¬¾Í±»´æ·ÅÔÚÈ«¾Ö±äÁ¿ÓòÖĞ£¬³ıÁË¾²Ì¬±äÁ¿Ö®ÍâµÄ¾Ö²¿±äÁ¿¶¼´æ·ÅÓÚÕ»ÖĞ
+	é™æ€å˜é‡è¢«åˆ›å»ºä»¥åï¼Œå°±è¢«å­˜æ”¾åœ¨å…¨å±€å˜é‡åŸŸä¸­ï¼Œé™¤äº†é™æ€å˜é‡ä¹‹å¤–çš„å±€éƒ¨å˜é‡éƒ½å­˜æ”¾äºæ ˆä¸­
 	
-	static±äÁ¿ÊÇÖ¸¾²Ì¬µÄ±äÁ¿£¬²»¹ÜÊÇÔÚÈ«¾Ö»¹ÊÇ¾Ö²¿ÉùÃ÷µÄstatic±äÁ¿¶¼´æ·ÅÓÚ³ÌĞòµÄÈ«¾Ö±äÁ¿ÇøÓò£¬ËùÒÔËüµÄÉúÃüÖÜÆÚÊÇ´Ó³ÌĞò¿ªÊ¼µ½³ÌĞò½áÊø¡£
-	µ«ÊÇstatic±äÁ¿µÄ×÷ÓÃÓò²¢²»µÈÍ¬ÓÚËüµÄÉú´æÖÜÆÚ£¬ËüµÄ×÷ÓÃÓò¾ö¶¨ÓÚËü±»¶¨ÒåµÄÎ»ÖÃ¡£
-	¿ÉÒÔÈÏÎªstatic±äÁ¿µÄ×÷ÓÃÓò<=Éú´æÖÜÆÚ¡£
+	staticå˜é‡æ˜¯æŒ‡é™æ€çš„å˜é‡ï¼Œä¸ç®¡æ˜¯åœ¨å…¨å±€è¿˜æ˜¯å±€éƒ¨å£°æ˜çš„staticå˜é‡éƒ½å­˜æ”¾äºç¨‹åºçš„å…¨å±€å˜é‡åŒºåŸŸï¼Œæ‰€ä»¥å®ƒçš„ç”Ÿå‘½å‘¨æœŸæ˜¯ä»ç¨‹åºå¼€å§‹åˆ°ç¨‹åºç»“æŸã€‚
+	ä½†æ˜¯staticå˜é‡çš„ä½œç”¨åŸŸå¹¶ä¸ç­‰åŒäºå®ƒçš„ç”Ÿå­˜å‘¨æœŸï¼Œå®ƒçš„ä½œç”¨åŸŸå†³å®šäºå®ƒè¢«å®šä¹‰çš„ä½ç½®ã€‚
+	å¯ä»¥è®¤ä¸ºstaticå˜é‡çš„ä½œç”¨åŸŸ<=ç”Ÿå­˜å‘¨æœŸã€‚
 	
-	¶ÔÓÚ°²×¿³ÌĞò£¬ÉùÃ÷µ¥Àı´´½¨µÄ±äÁ¿£¬ÉúÃüÖÜÆÚ°éËæ×Å³ÌĞòµÄÏú»Ù¶ø½áÊø£¨²âÊÔ·¢ÏÖ£¬ĞèÒª´ÓºóÌ¨ÍêÈ«É±ËÀ£©£¬²¢²»»áËæ×ÅÒ³ÃæµÄÏú»Ù¶ø½áÊø£¬Ò³ÃæµÄÏú»ÙÖ»ÊÇ½áÊøÁË±äÁ¿µÄ×÷ÓÃÓò¡£
-	³ÌĞòÎ´Ïú»ÙÊ±£¬ÏÂÒ»´Î½øÈë¸ÃÒ³Ãæ£¬ÓÉÓÚµ¥ÀıÄ£Ê½£¬²»»áÈ¥ÖØĞÂ´´½¨¶ÔÏó£¬¼ÌĞøÒıÓÃÉÏÒ»´Î´´½¨µÄ±äÁ¿£¨Í¨¹ı´òÓ¡log·¢ÏÖ£¬Ê¹ÓÃµÄ»¹ÊÇÍ¬Ò»¸ö¶ÑÄÚ´æµÄµØÖ·£©
-	Òò´ËÒÔÏÂĞ´·¨ÒªÌØ±ğ×¢Òâ¿ÕÖ¸Õë£º
+	å¯¹äºå®‰å“ç¨‹åºï¼Œå£°æ˜å•ä¾‹åˆ›å»ºçš„å˜é‡ï¼Œç”Ÿå‘½å‘¨æœŸä¼´éšç€ç¨‹åºçš„é”€æ¯è€Œç»“æŸï¼ˆæµ‹è¯•å‘ç°ï¼Œéœ€è¦ä»åå°å®Œå…¨æ€æ­»ï¼‰ï¼Œå¹¶ä¸ä¼šéšç€é¡µé¢çš„é”€æ¯è€Œç»“æŸï¼Œé¡µé¢çš„é”€æ¯åªæ˜¯ç»“æŸäº†å˜é‡çš„ä½œç”¨åŸŸã€‚
+	ç¨‹åºæœªé”€æ¯æ—¶ï¼Œä¸‹ä¸€æ¬¡è¿›å…¥è¯¥é¡µé¢ï¼Œç”±äºå•ä¾‹æ¨¡å¼ï¼Œä¸ä¼šå»é‡æ–°åˆ›å»ºå¯¹è±¡ï¼Œç»§ç»­å¼•ç”¨ä¸Šä¸€æ¬¡åˆ›å»ºçš„å˜é‡ï¼ˆé€šè¿‡æ‰“å°logå‘ç°ï¼Œä½¿ç”¨çš„è¿˜æ˜¯åŒä¸€ä¸ªå †å†…å­˜çš„åœ°å€ï¼‰
+	å› æ­¤ä»¥ä¸‹å†™æ³•è¦ç‰¹åˆ«æ³¨æ„ç©ºæŒ‡é’ˆï¼š
 	public class Test {
 
 		public static Test test;
@@ -499,41 +499,41 @@
 		}
 	}
 	
-	student ±äÁ¿²»ÒªËæ±ãÖÃÎª¿Õ£¬Ê¹ÓÃÊ±¼Ó¿ÕÖ¸ÕëÅĞ¶Ï£¬·ñÔòºÜÈİÒ×³öÏÖ¿ÕÖ¸ÕëÒì³£
+	student å˜é‡ä¸è¦éšä¾¿ç½®ä¸ºç©ºï¼Œä½¿ç”¨æ—¶åŠ ç©ºæŒ‡é’ˆåˆ¤æ–­ï¼Œå¦åˆ™å¾ˆå®¹æ˜“å‡ºç°ç©ºæŒ‡é’ˆå¼‚å¸¸
 	
-20. ²¿·ÖÊÖ»údebug°æ±¾¼ÓÔØ¶¯Ì¬¿â³öÏÖÒÔÏÂÎÊÌâ£º
+20. éƒ¨åˆ†æ‰‹æœºdebugç‰ˆæœ¬åŠ è½½åŠ¨æ€åº“å‡ºç°ä»¥ä¸‹é—®é¢˜ï¼š
 		Detected problems with app native libraries(please consult log for detail:invalid DT_NEEDED:xxxxxx.so)
-		´ò¿ªAndroidManifest.xmlÎÄ¼ş½« Application µÄdebugable = true¸Ä³Édebugable = false
+		æ‰“å¼€AndroidManifest.xmlæ–‡ä»¶å°† Application çš„debugable = trueæ”¹æˆdebugable = false
 		
-21.	»ªÎªÊÖ»úÓïÑÔÎÊÌâ
-	1.»ªÎªÊÖ»úÏµÍ³»ñÈ¡ÏµÍ³ÓïÑÔ
-		zh_CN#Hant	//·±ÌåÓïÑÔ
-		zh_CN#Hans	//¼òÌåÓïÑÔ
-	2.Ğ¡Ã×ÊÖ»ú»ñÈ¡ÓïÑÔ
-		zh_CN	//¼òÌåÓïÑÔ
+21.	åä¸ºæ‰‹æœºè¯­è¨€é—®é¢˜
+	1.åä¸ºæ‰‹æœºç³»ç»Ÿè·å–ç³»ç»Ÿè¯­è¨€
+		zh_CN#Hant	//ç¹ä½“è¯­è¨€
+		zh_CN#Hans	//ç®€ä½“è¯­è¨€
+	2.å°ç±³æ‰‹æœºè·å–è¯­è¨€
+		zh_CN	//ç®€ä½“è¯­è¨€
 		
-22.Ó¦ÓÃÍËµ½ºóÌ¨
+22.åº”ç”¨é€€åˆ°åå°
 
 	override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-        // ¹ıÂË°´¼ü¶¯×÷£¬°´·µ»Ø¼ü²»ÍË³ö³ÌĞò£¬Ö±½ÓÍËµ½×ÀÃæ
+        // è¿‡æ»¤æŒ‰é”®åŠ¨ä½œï¼ŒæŒ‰è¿”å›é”®ä¸é€€å‡ºç¨‹åºï¼Œç›´æ¥é€€åˆ°æ¡Œé¢
         if (event!!.action == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_BACK) {
-            moveTaskToBack(true)//true¶ÔÈÎºÎActivity¶¼ÊÊÓÃ
+            moveTaskToBack(true)//trueå¯¹ä»»ä½•Activityéƒ½é€‚ç”¨
             return true
         }
         return super.onKeyDown(keyCode, event)
     }
 	
-	×¢Òâ£ººÜÒÅº¶µÄÊÇÃ»ÓÃ£¬Ò²ÊÔ¹ıÆäËû·½·¨£¬×îºó»³ÒÉÊÇÆô¶¯Ä£Ê½µÄÔ­Òò¡£×îºó¼ì²éÁËÏÂ£¬Ê¹ÓÃµÄÊÇÄ¬ÈÏµÄÆô¶¯Ä£Ê½¡£
-	Ë¼Ë÷Á¼¾Ã£¬»á²»»áÊÇÇ°Ò»¸öActivityÆô¶¯Ä£Ê½²»¶Ô£¬
-	ËùÒÔ£¬µ¼ÖÂÈÎÎñÕ»ÀïÃæÓĞÁíÒ»¸öActivity¡£ÓÚÊÇ ¼ì²éÁËÏÂÇåµ¥ÎÄ¼ş£¬¹ûÈ»¡£ÓÚÊÇ£¬½«Ç°Ò»¸öActivity¸ÄÎªstandard£¬Ò»ÊÔ£¬Íê³É¡£
+	æ³¨æ„ï¼šå¾ˆé—æ†¾çš„æ˜¯æ²¡ç”¨ï¼Œä¹Ÿè¯•è¿‡å…¶ä»–æ–¹æ³•ï¼Œæœ€åæ€€ç–‘æ˜¯å¯åŠ¨æ¨¡å¼çš„åŸå› ã€‚æœ€åæ£€æŸ¥äº†ä¸‹ï¼Œä½¿ç”¨çš„æ˜¯é»˜è®¤çš„å¯åŠ¨æ¨¡å¼ã€‚
+	æ€ç´¢è‰¯ä¹…ï¼Œä¼šä¸ä¼šæ˜¯å‰ä¸€ä¸ªActivityå¯åŠ¨æ¨¡å¼ä¸å¯¹ï¼Œ
+	æ‰€ä»¥ï¼Œå¯¼è‡´ä»»åŠ¡æ ˆé‡Œé¢æœ‰å¦ä¸€ä¸ªActivityã€‚äºæ˜¯ æ£€æŸ¥äº†ä¸‹æ¸…å•æ–‡ä»¶ï¼Œæœç„¶ã€‚äºæ˜¯ï¼Œå°†å‰ä¸€ä¸ªActivityæ”¹ä¸ºstandardï¼Œä¸€è¯•ï¼Œå®Œæˆã€‚
 	
-23.°²×¿×ÖÌå²»ËæÏµÍ³·¢Éú±ä»¯
+23.å®‰å“å­—ä½“ä¸éšç³»ç»Ÿå‘ç”Ÿå˜åŒ–
 
    /*
-   *ÖØĞ´ getResource ·½·¨£¬·ÀÖ¹ÏµÍ³×ÖÌåÓ°Ïì
+   *é‡å†™ getResource æ–¹æ³•ï¼Œé˜²æ­¢ç³»ç»Ÿå­—ä½“å½±å“
    */
   @Override
-  public Resources getResources() {//½ûÖ¹app×ÖÌå´óĞ¡¸úËæÏµÍ³×ÖÌå´óĞ¡µ÷½Ú
+  public Resources getResources() {//ç¦æ­¢appå­—ä½“å¤§å°è·Ÿéšç³»ç»Ÿå­—ä½“å¤§å°è°ƒèŠ‚
     Resources resources = super.getResources();
     if (resources != null && resources.getConfiguration().fontScale != 1.0f) {
       android.content.res.Configuration configuration = resources.getConfiguration();
@@ -543,15 +543,17 @@
     return resources;
   }
   
- 24.Î¢ĞÅÒ»´ÎĞÔÏûÏ¢£¬ÎŞ·¨·µ»ØappÎÊÌâ£¨µ÷ÆğµÄÎ¢ĞÅ½çÃæ-WXEntryActivity£¬Óë²»ÔÚappµÄÈÎÎñÕ»ÖĞ£¬µ¼ÖÂ·µ»ØÓĞÎÊÌâ£¬ÎŞ·¨·µ»Ø×Ô¼ºµÄapp£©
-    Î¢ĞÅÓĞ»Øµ÷ÁË(packagename).wxapi.WXEntryActivityµÄonResp·½·¨Âğ£¿Èç¹û»Øµ÷ÁË£¬ÄÇ¾ÍÊÇÒÑ¾­Ìø×ªÁË¡£ ÔÚAndroidManifest.xmlµÄWXEntryActivityÖĞ¼ÓÈëÈçÏÂÊôĞÔ£º
+ 24.å¾®ä¿¡ä¸€æ¬¡æ€§æ¶ˆæ¯ï¼Œæ— æ³•è¿”å›appé—®é¢˜ï¼ˆè°ƒèµ·çš„å¾®ä¿¡ç•Œé¢-WXEntryActivityï¼Œä¸ä¸åœ¨appçš„ä»»åŠ¡æ ˆä¸­ï¼Œå¯¼è‡´è¿”å›æœ‰é—®é¢˜ï¼Œæ— æ³•è¿”å›è‡ªå·±çš„appï¼‰
+    å¾®ä¿¡æœ‰å›è°ƒäº†(packagename).wxapi.WXEntryActivityçš„onRespæ–¹æ³•å—ï¼Ÿå¦‚æœå›è°ƒäº†ï¼Œé‚£å°±æ˜¯å·²ç»è·³è½¬äº†ã€‚ åœ¨AndroidManifest.xmlçš„WXEntryActivityä¸­åŠ å…¥å¦‚ä¸‹å±æ€§ï¼š
 	android:taskAffinity="your?packagename"
-	android:launchMode="singleTask" ±£Ö¤Ìø×ªºó»Øµ½ÄãµÄappµÄtask¡£
-	ÕâÑùµ±»Øµ÷WXEntryActivityÀàºóÆäÊµ¾Í»Øµ½appÁË£¬ÕâÊ±ºò×Ô¼º×ö´¦Àí¾ÍºÃ£¬Ö÷Òª¾ÍÊÇÇåµ¥ÎÄ¼şÅäÖÃ
+	android:launchMode="singleTask" ä¿è¯è·³è½¬åå›åˆ°ä½ çš„appçš„taskã€‚
+	è¿™æ ·å½“å›è°ƒWXEntryActivityç±»åå…¶å®å°±å›åˆ°appäº†ï¼Œè¿™æ—¶å€™è‡ªå·±åšå¤„ç†å°±å¥½ï¼Œä¸»è¦å°±æ˜¯æ¸…å•æ–‡ä»¶é…ç½®
 	
-	taskAffinity£¬¿ÉÒÔ·­ÒëÎªÈÎÎñÏà¹ØĞÔ¡£Õâ¸ö²ÎÊı±êÊ¶ÁËÒ»¸ö Activity ËùĞèÒªµÄÈÎÎñÕ»µÄÃû×Ö£¬Ä¬ÈÏÇé¿öÏÂ£¬ËùÓĞ Activity ËùĞèµÄÈÎÎñÕ»µÄÃû×ÖÎªÓ¦ÓÃµÄ°üÃû
-	µ± Activity ÉèÖÃÁË taskAffinity ÊôĞÔ£¬ÄÇÃ´Õâ¸ö Activity ÔÚ±»´´½¨Ê±¾Í»áÔËĞĞÔÚºÍ taskAffinity Ãû×ÖÏàÍ¬µÄÈÎÎñÕ»ÖĞ£¬
-	Èç¹ûÃ»ÓĞ£¬ÔòĞÂ½¨ taskAffinity Ö¸¶¨µÄÈÎÎñÕ»£¬²¢½« Activity ·ÅÈë¸ÃÕ»ÖĞ¡£
-	ÁíÍâ£¬taskAffinity ÊôĞÔÖ÷ÒªºÍ singleTask »òÕß allowTaskReparenting ÊôĞÔÅä¶ÔÊ¹ÓÃ£¬ÔÚÆäËûÇé¿öÏÂÃ»ÓĞÒâÒå¡£
-
+	taskAffinityï¼Œå¯ä»¥ç¿»è¯‘ä¸ºä»»åŠ¡ç›¸å…³æ€§ã€‚è¿™ä¸ªå‚æ•°æ ‡è¯†äº†ä¸€ä¸ª Activity æ‰€éœ€è¦çš„ä»»åŠ¡æ ˆçš„åå­—ï¼Œé»˜è®¤æƒ…å†µä¸‹ï¼Œæ‰€æœ‰ Activity æ‰€éœ€çš„ä»»åŠ¡æ ˆçš„åå­—ä¸ºåº”ç”¨çš„åŒ…å
+	å½“ Activity è®¾ç½®äº† taskAffinity å±æ€§ï¼Œé‚£ä¹ˆè¿™ä¸ª Activity åœ¨è¢«åˆ›å»ºæ—¶å°±ä¼šè¿è¡Œåœ¨å’Œ taskAffinity åå­—ç›¸åŒçš„ä»»åŠ¡æ ˆä¸­ï¼Œ
+	å¦‚æœæ²¡æœ‰ï¼Œåˆ™æ–°å»º taskAffinity æŒ‡å®šçš„ä»»åŠ¡æ ˆï¼Œå¹¶å°† Activity æ”¾å…¥è¯¥æ ˆä¸­ã€‚
+	å¦å¤–ï¼ŒtaskAffinity å±æ€§ä¸»è¦å’Œ singleTask æˆ–è€… allowTaskReparenting å±æ€§é…å¯¹ä½¿ç”¨ï¼Œåœ¨å…¶ä»–æƒ…å†µä¸‹æ²¡æœ‰æ„ä¹‰ã€‚
+25.æŒ‰androidçš„homeé”®ï¼Œéšè—æˆ‘ä»¬ä¸æ„¿ç»™ç”¨æˆ·æ˜¾ç¤ºçš„åº”ç”¨
+   å¿…é¡»åœ¨AndroidManifest.xmlä¸­çš„ä¸»Activityä¸­æ·»åŠ è¿™å¥è¯
+   android:excludeFromRecents="true"æ‰èƒ½ç”Ÿæ•ˆ
 
