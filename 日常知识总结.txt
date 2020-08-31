@@ -557,3 +557,6 @@
    必须在AndroidManifest.xml中的主Activity中添加这句话
    android:excludeFromRecents="true"才能生效
 
+26.NDK编译报错The project is not a CDT project
+   检查项目里根目录下面是否缺少.cproject文件
+
