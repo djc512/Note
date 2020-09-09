@@ -560,3 +560,80 @@
 26.NDK编译报错The project is not a CDT project
    检查项目里根目录下面是否缺少.cproject文件
 
+27.删除文件以及文件夹
+   public static void deleteDir(String dirPath) {
+	File file = new File(dirPath);
+	if (file.isFile()) {
+		file.delete();
+	} else {
+		File[] files = file.listFiles();
+		if (files == null) {
+			file.delete();
+		} else {
+		    for (int i = 0; i < files.length; i++) {
+		     	deleteDir(files[i].getAbsolutePath());
+		    }
+		    file.delete();
+		}
+	}
+    }
+    
+   28.桌面悬浮框代码
+	windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
+        mLayoutParams = new WindowManager.LayoutParams();
+        mLayoutParams.windowAnimations = android.R.style.Animation_Translucent;
+
+        // 设置窗体显示类型
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            mLayoutParams.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
+        } else {
+            mLayoutParams.type = WindowManager.LayoutParams.TYPE_PHONE;
+        }
+        mLayoutParams.format = PixelFormat.RGBA_8888;
+        mLayoutParams.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL |
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_FULLSCREEN;
+        mLayoutParams.width = CommUtil.dip2px(this, 150);
+        mLayoutParams.height = CommUtil.dip2px(this, 150);
+        mLayoutParams.x = (getResources().getDisplayMetrics().widthPixels - mLayoutParams.width) / 2;
+        mLayoutParams.y = 0;
+        mLayoutParams.gravity = Gravity.TOP | Gravity.LEFT;
+   
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        Log.i(TAG, "onTouchEvent: " + event.getAction());
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                mIsUp = false;
+                mDownTime = System.currentTimeMillis();
+                startX = event.getRawX();
+                startY = event.getRawY();
+                viewX = mLayoutParams.x;
+                viewY = mLayoutParams.y;
+                break;
+            case MotionEvent.ACTION_MOVE:
+                float offsetX = event.getRawX() - startX;
+                float offsetY = event.getRawY() - startY;
+                if (Math.abs(offsetX) >= 35 || Math.abs(offsetY) >= 35) {
+                    isMove = true;
+                    mLayoutParams.x = (int) (viewX + offsetX);
+                    mLayoutParams.y = (int) (viewY + offsetY);
+                    windowManager.updateViewLayout(this, mLayoutParams);
+                } else {
+                    isMove = false;
+                }
+                break;
+            case MotionEvent.ACTION_UP:
+                setAutoFoucs();
+                mIsUp = true;
+                isMove = false;
+                break;
+            case MotionEvent.ACTION_CANCEL:
+                isMove = false;
+                break;
+        }
+        return true;
+    }
+
+29.操作安卓Service里面的方法
+   创建一个单例，通过get与set方法获取引用对象，即可操作Service里面的变量与方法
+
