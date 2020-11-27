@@ -1,0 +1,88 @@
+HashMap与ArrayMap区别
+1.查找效率
+	HashMap是根据hashcode的值直接算出Index,查找效率是随着数组长度而增加
+	ArrayMap使用二分法查找，数组长度每增加一倍，就需要多判断一下，效率逐渐降低
+2.扩充数量
+	HashMap初始值为16个长度，每次扩充，直接申请双倍数组空间
+	ArrayMap每次扩充，如果size长度大于8时，申请size*1.5个长度，大于4小于8申请8个，小于4申请4个
+	ArrayMap申请的内存空间较少，但是扩充频率较高，数据量较大时，使用HashMap更合适，扩充次数比ArrayMap少的多
+3.扩充频率
+	HashMap每次扩充的时候需要重新计算每个数组成员的位置，然后放到新的位置
+	ArrayMap则直接使用System.arraycopy，arraycopy是把老的数组对象一个一个赋给新的数组，直接调用C层代码操作
+	效率上ArrayMap更占优势
+4.内存耗费
+	ArrayMap采用一种独特的方式，可以重复利用因为数据扩充而遗留下的数组空间，方便下一个ArrayMap使用，HashMap没有这种设计
+	ArrayMap只缓存了4与8的长度，频繁使用数量较少时，ArrayMap更节省内存
+5.总结
+	数据量比较少，并且频繁使用推荐使用ArrayMap
+	数据量较大，使用HashMap
+	
+	
+Glide与Picasso对比
+1.上下文环境
+	Picasso上下文环境为context
+	Glide上下文环境，context，Activity与Fragment，使用的好处可以保证图片加载与控件的声明周期保持一致，Pause暂停，Resume继续加载
+2.加载图片的格式
+	Picasso加载图片格式为RGB_8888
+	Glide加载图片RGB_565
+	相对来说Picasso的图片质量高于Glide，但是Glide可以创建一个新的GlideModule 将图片转换RGB_8888
+3.内存开销
+	Picasso的内存开销大概为Glide的一半
+4.图片缓存策略
+	picasso缓存全尺寸
+	Glide缓存与ImageViwe的尺寸一致，为每一种尺寸的ImageView缓存一次，不同界面的同一张图片也要缓存多次，可以使用diskCacheStrategy(DiskCacheStrategy.ALL)
+	即缓存全尺寸与其他尺寸
+	Glide这种方式加载显示比较快，但是所占用的缓存空间较大，Picasso需要在显示之前重新调整大小而导致一些延迟
+5.Gif图片
+	Picasso不能加载
+	Glide可以加载
+6.库的大小
+	Picasso(118KB)比Glide(430KB)小的多,Glide使用时要注意65535的限制，开启ProGuard进行混淆7.
+7.总结
+	Glide加载图像的速度，缓存策略都优于Picasso,并且有利于减少OOM的发生
+	Picasso图片质量较高
+	
+	
+EventBus2.0与3.0
+1.订阅者有四种接收方式
+	2.0		Async	BackgroundThread	MainThread	PostThread
+	3.0		ASYNC	BACKGROUND			MAIN		POSTING
+	Async：无论发布者在哪个线程，接收者都会开一个线程接收事件
+	BackgroundThread：发布者如果在主线程，接收者会开一个子线程接受事件，如果发布者是在子线程，接收者就会在改子线程中处理事件
+	MainThread：不论发布者在那个线程，接收者都在主线程处理事件
+	PostThread：发布者在哪个线程，接收者就在哪个线程接收事件
+	
+	onEvent()，默认的对应的：PostThread
+2.注意事项
+	1.接收方法必须是public
+	2.应用退出必须解除注册
+	3.如果使用的是粘性事件，事件使用后，注意移除粘性事件，防止继续传递下去
+	4.正常使用，要保证接收事件的页面已经存在
+	5.EventBus 3.0版本中引入了 EventBusAnnotationProcessor，大大提高了EventBus的运行效率
+	
+	
+ANR介绍
+	anr是因为当前操作超出系统允许的的时间，造成的程序无响应
+	前台服务允许的时间20s
+	后台服务允许的时间200s
+	前台广播允许的时间10s
+	后台广播允许的时间60s
+	activity允许的时间是5s
+	
+	input操作如果没有后续的操作就不会发生anr  for:在一个button点击事件中，放一个空循环，则不会发生anr,如果再次点击就会发生anr,或者循环里做了某些操作也会发生anr
+	
+	查看系统有没发生anr 可以通过控制台输入ActivityManager过滤anr日志
+	
+	发生anr可以在手机data/anr/文件夹下查看崩溃日志
+	
+	
+Binder介绍
+	Binder可以提进程间的通讯，安卓中常用的是AIDL(Android Interface Definition Language)
+	
+	
+	
+	
+	
+	
+	
+	
