@@ -639,4 +639,11 @@
   
 30.个推SDK推送服务被自动杀死问题排查
     思路：尝试不同targetSDK以后发现低于26都可以收到推送，高于26就收不到。通过查看控制台线程，发现启动是推送服务的确被拉起来了，然后立刻又被杀死了，log信息已经被清除，后通过dos命令获取所有日志     信息，过滤出pushservice消息，发现由于以前代码使用firebase导致的，因为国内手机没有google三件套，导致firebase初始化失败,pushservice不知为什么也被杀死了。后来屏蔽firebase初始化以后，即可     收到推送
+    
+ 31.安卓8.0透明主题与设定屏幕方向冲突导致的崩溃
+    代码中动态设置，捕获异常
+    try {
+	setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+    } catch (Exception e) {
+    }
 
