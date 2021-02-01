@@ -646,4 +646,10 @@
 	setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
     } catch (Exception e) {
     }
+    
+  32.刷新视频到相册中
+    ContentValues values = new ContentValues();
+    values.put(MediaStore.Video.Media.DATA, new File(outFilePath).getAbsolutePath().toString());
+    getContentResolver().insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values);
+    
 
