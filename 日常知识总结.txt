@@ -651,5 +651,7 @@
     ContentValues values = new ContentValues();
     values.put(MediaStore.Video.Media.DATA, new File(outFilePath).getAbsolutePath().toString());
     getContentResolver().insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values);
-    
+   
+  33.关于list赋值的问题
+    copyList创建好以后，如果将另外一个list赋值给它，则赋值的是这个list所指向的地址，如果copyList执行clear方法，则list也会被清空数据
 
