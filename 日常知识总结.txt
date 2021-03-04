@@ -656,7 +656,7 @@
     copyList创建好以后，如果将另外一个list赋值给它，则赋值的是这个list所指向的地址，如果copyList执行clear方法，则list也会被清空数据
     
   34.YUV视频旋转角度
-  	NV21（yuv420p）旋转720
+  	NV21（yuv420p）旋转720  注意UV的排布。UVUVUVUV  或者UUUUVVVV
   	private byte[] rotateYUVDegree270(int imageWidth, int imageHeight) {
 
 		int yLen = imageWidth*imageHeight;
