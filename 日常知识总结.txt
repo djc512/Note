@@ -759,3 +759,22 @@
 		}
 		return src;
 	    }
+	    
+	    镜像NV21翻转,需要宽高对调一下
+	    private void flidMirror(int[] src, int w, int h) {
+		int temp = 0;
+		for (int i = 0; i < h; i++) {
+		    for (int j = 0; j < w / 2; j++) {
+			temp = src[i * w + j];
+			src[i * w + j] = src[(i + 1) * w - j - 1];
+			src[(i + 1) * w - j - 1] = temp;
+		    }
+		}
+		int index = w * h;
+		for (int i = 0; i < w * h / 2 / 2; i++) {
+		    temp = src[i + index];
+		    src[i + index] = src[w * h / 2 - 1 - i + index];
+		    src[w * h / 2 - 1 - i + index] = temp;
+		}
+	    }
+	    
