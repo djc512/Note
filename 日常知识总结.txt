@@ -655,7 +655,7 @@
   33.关于list赋值的问题
     copyList创建好以后，如果将另外一个list赋值给它，则赋值的是这个list所指向的地址，如果copyList执行clear方法，则list也会被清空数据
     
-  34.YUV视频旋转角度
+   34.YUV视频旋转角度
   	NV21（yuv420sp）旋转720  注意UV的排布。UVUVUVUV  或者UUUUVVVV
   	private byte[] rotateYUVDegree270(int imageWidth, int imageHeight) {
 
@@ -777,4 +777,7 @@
 		    src[w * h / 2 - 1 - i + index] = temp;
 		}
 	    }
+35.使用eclipse生成doc文档
+   出现编码的错误  -encoding utf-8 -charset utf-8
+   出现其他错误    在.clssspath文件中添加	<classpathentry kind="lib" path="G:\eclipse\sdk\platforms\android-29\android.jar"/>
 	    
