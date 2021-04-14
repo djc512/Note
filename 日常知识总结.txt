@@ -780,4 +780,7 @@
 35.使用eclipse生成doc文档
    出现编码的错误  -encoding utf-8 -charset utf-8
    出现其他错误    在.clssspath文件中添加	<classpathentry kind="lib" path="G:\eclipse\sdk\platforms\android-29\android.jar"/>
+ 
+36.安卓画中画Ui无法隐藏的问题
+   onPictureInPictureModeChanged方法中需要隐藏的UI控件如果写死的宽高就会导致隐藏失败
 	    
