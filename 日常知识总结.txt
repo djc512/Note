@@ -792,4 +792,61 @@
                 0+statusBarHeight);
    居于屏幕顶部中间位置
    getLocationOnScreen，原点（0,0）是屏幕左上角
-	    
+   
+38.屏幕根据重力进行旋转
+	public class MainActivity extends AppCompatActivity {
+
+	  private MyOrientoinListener myOrientoinListener;
+
+	    @Override
+	    protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_main);
+
+		myOrientoinListener = new MyOrientoinListener(this);
+		boolean autoRotateOn = (android.provider.Settings.System.getInt(getContentResolver(), Settings.System.ACCELEROMETER_ROTATION, 0) == 1);
+		//检查系统是否开启自动旋转
+		if (autoRotateOn) {
+		    myOrientoinListener.enable();
+		}
+	    }
+
+	    @Override
+	    protected void onDestroy() {
+		super.onDestroy();
+		//销毁时取消监听
+		myOrientoinListener.disable();
+	    }
+
+	    class MyOrientoinListener extends OrientationEventListener {
+		public MyOrientoinListener(Context context) {
+		super(context);
+	    }
+
+	    public MyOrientoinListener(Context context, int rate) {
+		super(context, rate);
+	    }
+
+	    @Override
+	    public void onOrientationChanged(int orientation) {
+	    	//orientation  顺时针0-360
+		int screenOrientation = getResources().getConfiguration().orientation;
+		if (((orientation >= 0) && (orientation < 45)) || (orientation > 315)) {    //设置竖屏
+		    if (screenOrientation != ActivityInfo.SCREEN_ORIENTATION_PORTRAIT && orientation != ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT) {
+			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+		    }
+		} else if (orientation > 225 && orientation < 315) { //设置横屏
+		    if (screenOrientation != ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
+			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+		    }
+		} else if (orientation > 45 && orientation < 135) {// 设置反向横屏
+		    if (screenOrientation != ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE) {
+			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
+		    }
+		} else if (orientation > 135 && orientation < 225) { //反向竖屏
+		    if (screenOrientation != ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT) {
+			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT);
+		    }
+		}
+	    }
+	}
