@@ -783,4 +783,9 @@
  
 36.安卓画中画Ui无法隐藏的问题
    onPictureInPictureModeChanged方法中需要隐藏的UI控件如果写死的宽高就会导致隐藏失败
+   
+37.popuWindow相关
+   showAtLocation参数,第一个参数是inflateView所在的父View，放置位置时需要减去状态栏与底部底部导航栏的高度
+   横屏时获取底部导航栏的高度与竖屏时一样
+   
 	    
