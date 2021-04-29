@@ -787,5 +787,9 @@
 37.popuWindow相关
    showAtLocation参数,第一个参数是inflateView所在的父View，放置位置时需要减去状态栏与底部底部导航栏的高度
    横屏时获取底部导航栏的高度与竖屏时一样
-   
+    popupWindow.showAtLocation(rl_map_container, Gravity.TOP,
+                0- navigationBarHeight / 2,
+                0+statusBarHeight);
+   居于屏幕顶部中间位置
+   getLocationOnScreen，原点（0,0）是屏幕左上角
 	    
