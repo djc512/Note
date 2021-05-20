@@ -852,5 +852,5 @@
 	}
 	
 39 Android横屏时，软键盘全屏显示，遮挡住输入框
-	EditTextView添加属性  android:imeOptions="flagNoExtractUi"
+   EditTextView添加属性  android:imeOptions="flagNoExtractUi"
  
