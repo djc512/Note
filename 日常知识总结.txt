@@ -854,3 +854,103 @@
 39 Android横屏时，软键盘全屏显示，遮挡住输入框
    EditTextView添加属性  android:imeOptions="flagNoExtractUi"
  
+40 桌面悬浮图标启动后台应用
+   ActivityManager activtyManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+    List<ActivityManager.RunningTaskInfo> runningTaskInfos = activtyManager.getRunningTasks(3);
+    for (ActivityManager.RunningTaskInfo runningTaskInfo : runningTaskInfos) {
+	if (getPackageName().equals(runningTaskInfo.topActivity.getPackageName())) {
+	    activtyManager.moveTaskToFront(runningTaskInfo.id, ActivityManager.MOVE_TASK_WITH_HOME);
+	    return true;
+	}
+    }
+    
+41 启动高德或者百度地图App
+   Intent intent = getPackageManager().getLaunchIntentForPackage(Constant.MAP_GAODE);
+   intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+   startActivity(intent);
+   
+   Intent gaodeIntent = new Intent();
+   Uri uri = Uri.parse("androidamap://rootmap?sourceApplication=com.autonavi.minimap");
+   gaodeIntent.setData(uri);
+   gaodeIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+   gaodeIntent.setPackage("com.autonavi.minimap");
+   startActivity(gaodeIntent);
+    
+   第二种方式启动会每次都重启App,重置所有的操作。最好不使用
+  
+41 桌面悬浮图标，任意拖拽，自动吸附（竖屏状态，横屏需要根据起始位置重新计算）
+   private void createView() {
+        ImageView floatView = new ImageView(getApplicationContext());
+        floatView.setImageResource(R.mipmap.ic_launcher); // 这里简单的用自带的icon来做演示
+
+        windowManager = (WindowManager) getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
+
+        windowManagerParams = new WindowManager.LayoutParams();
+        windowManagerParams.type = WindowManager.LayoutParams.TYPE_PHONE; // 设置window type
+        windowManagerParams.format = PixelFormat.RGBA_8888; // 设置图片格式，效果为背景透明
+
+        windowManagerParams.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
+                | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
+
+        windowManagerParams.x = halfScreenWidth;//默认位置屏幕右边居中，如果不设置默认（0,0）居中，拖动时要考虑起始位置
+        windowManagerParams.y = 0;
+
+        windowManagerParams.width = dip2px(48);
+        windowManagerParams.height = dip2px(48);
+
+        windowManager.addView(floatView, windowManagerParams);
+
+        floatView.setOnTouchListener(new View.OnTouchListener() {
+            @SuppressLint("ClickableViewAccessibility")
+            @Override
+            public boolean onTouch(View view, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        rawDownX = event.getRawX();
+                        rawDownY = event.getRawY();
+
+                        if (isRight) {
+                            windowManagerParams.x = halfScreenWidth;
+                            windowManagerParams.y = disY;
+                        } else {
+                            windowManagerParams.x = -halfScreenWidth;
+                            windowManagerParams.y = disY;
+                        }
+                        windowManager.updateViewLayout(floatView, windowManagerParams);//更新位置
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        if (isRight) {
+                            rawMoveX = event.getRawX() + halfScreenWidth;
+                        } else {
+                            rawMoveX = event.getRawX() - halfScreenWidth;
+                        }
+
+                        rawMoveY = event.getRawY();
+                        disY = startDisY + (int) (rawMoveY - rawDownY);
+                        windowManagerParams.x = (int) (rawMoveX - rawDownX);
+                        windowManagerParams.y = disY;
+
+                        windowManager.updateViewLayout(floatView, windowManagerParams);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        float rawUpX = event.getRawX();
+                        float rawUpY = event.getRawY();
+
+                        if (rawUpX > halfScreenWidth) {
+                            windowManagerParams.x = halfScreenWidth;
+                            isRight = true;
+                        } else {
+                            windowManagerParams.x = -halfScreenWidth;
+                            isRight = false;
+                        }
+                        windowManagerParams.y = disY;
+                        windowManager.updateViewLayout(floatView, windowManagerParams);
+
+                        startDisY = disY;
+                        break;
+
+                }
+                return true;
+            }
+        });
+    }
