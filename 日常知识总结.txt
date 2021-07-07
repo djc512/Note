@@ -954,3 +954,10 @@
             }
         });
     }
+42.打包aab文件
+   1.安卓Studio 版本大于或等于3.2
+   2.使用安卓studio打包成aab文件
+   3.下载bundletool.jar包
+   4.最好将aab,jar包,签名文件以及生成的apks文件  都放在同一个文件夹下，然后命令窗口调用：java -jar xxx\bundletool-all-1.7.0.jar build-apks --bundle=xxx\xxx.aab --output=xxx\xxx.apks -    -ks=xxx\xxx.keystore --ks-pass=pass:xxx --ks-key-alias=xxx --key-pass=pass:xxx  会生成一个可能几百兆的apks文件(xxx为文件路径以及文件名)
+   5.命令窗口调用：java -jar xxx\xxx.jar install-apks --apks=xxx\test.apks 成功会显示The APKs have been extracted in the directory: C:\Users\admin\AppData\Local\Temp\xxx,如果连接上    手机会在手机上安装一个apk文件(安装过程稍慢)
+   6.对比安装后的原始apk文件发现小了十几兆
