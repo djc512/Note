@@ -961,3 +961,16 @@
    4.最好将aab,jar包,签名文件以及生成的apks文件  都放在同一个文件夹下，然后命令窗口调用：java -jar xxx\bundletool-all-1.7.0.jar build-apks --bundle=xxx\xxx.aab --output=xxx\xxx.apks -    -ks=xxx\xxx.keystore --ks-pass=pass:xxx --ks-key-alias=xxx --key-pass=pass:xxx  会生成一个可能几百兆的apks文件(xxx为文件路径以及文件名)
    5.命令窗口调用：java -jar xxx\xxx.jar install-apks --apks=xxx\test.apks 成功会显示The APKs have been extracted in the directory: C:\Users\admin\AppData\Local\Temp\xxx,如果连接上    手机会在手机上安装一个apk文件(安装过程稍慢)
    6.对比安装后的原始apk文件发现小了十几兆
+
+43.popuwindow 点击按钮显示，再次点击消失
+    popupWindow.setFocusable(true);//必须设置，否则点击按钮，还会再次显示，而不会消失
+    popupWindow.setTouchInterceptor(new View.OnTouchListener() {
+	@Override
+	public boolean onTouch(View v, MotionEvent event) {
+	    if (event.getAction() == MotionEvent.ACTION_OUTSIDE) {
+		popupWindow.dismiss();
+		return true;
+	    }
+	    return false;
+	}
+    });
