@@ -963,8 +963,8 @@
    6.对比安装后的原始apk文件发现小了十几兆
 
 43.popuwindow 点击按钮显示，再次点击消失
-    popupWindow.setFocusable(true);//必须设置，否则点击按钮，还会再次显示，而不会消失
-    popupWindow.setTouchInterceptor(new View.OnTouchListener() {
+   1.popupWindow.setFocusable(true);//必须设置，否则点击按钮，还会再次显示，而不会消失
+     popupWindow.setTouchInterceptor(new View.OnTouchListener() {
 	@Override
 	public boolean onTouch(View v, MotionEvent event) {
 	    if (event.getAction() == MotionEvent.ACTION_OUTSIDE) {
@@ -973,4 +973,7 @@
 	    }
 	    return false;
 	}
-    });
+     });
+   2.默认点击外部是可以消失的，如果不调用代码，只需要设置
+     popupWindow.setOutsideTouchable(true);//这块代码一定不要写     
+     popupWindow.setFocusable(true);//只需要这块代码
