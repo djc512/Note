@@ -977,3 +977,20 @@
    2.默认点击外部是可以消失的，如果不调用代码，只需要设置
      popupWindow.setOutsideTouchable(true);//这块代码一定不要写     
      popupWindow.setFocusable(true);//只需要这块代码
+44.将一张Bitmap放在另外一张中心
+   private Bitmap add2Bitmap() {
+   	//以第一张Bitmap的参数为主创建一张模板
+        Bitmap result = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+	//创建模板Canvas
+        Canvas canvas = new Canvas(result);
+	//使用canvas将第一张Bitmap放在模板中  0,0代表左上方坐标
+        canvas.drawBitmap(qrBitmap, 0, 0, null);
+        Bitmap qrCodeLogo = BitmapFactory.decodeResource(getResources(), R.mipmap.witness_logo_qrcode);
+	//获取第二张Bitmap的宽高
+        int secondWidth = qrCodeLogo.getWidth();
+        int secondHeight = qrCodeLogo.getHeight();
+	//使用canvas将第一张Bitmap放在模板中  中间两个参数代表左上方坐标，null表示不需要画笔Paint
+        canvas.drawBitmap(qrCodeLogo, (width -secondWidth)/2, (height-secondHeight)/2, null);
+	//返回合并Bitmap后的模板
+        return result;
+    }
