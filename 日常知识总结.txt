@@ -999,4 +999,12 @@
    Error:com.android.builder.dexing.DexArchiveBuilderException:
    Failed to process C:\Users\admin\.gradle\caches\modules-2\files-2.1\com.google.code.gson\gson\2.8.6\9180733b7df8542621dc12e21e87557e8c99b8cb\gson-2.8.6.jar
    
-   找到gson-2.8.6.jar文件，删除里面的module-info.class文件即可
+   Java8 52.0
+   Java9 53.0
+   gson-2.8.6.jar
+   这个包里面，包含了module-info.class导致在java8编译环境无法识别
+   总不能因为这一个玩意，去升级成java9
+   于是找到C:\Users\dengtl.gradle\caches\modules-2\files-2.1\com.google.code.gson\gson\2.8.6\9180733b7df8542621dc12e21e87557e8c99b8cb\gson-2.8.6.jar
+   使用winrar打开这个jar文件，强制删除module-info.class这个类
+   重新编译即可
+
