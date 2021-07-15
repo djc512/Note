@@ -994,3 +994,9 @@
 	//返回合并Bitmap后的模板
         return result;
     }
+45.安卓studio安装报错
+   com.android.builder.dexing.DexArchiveBuilderException:Error while dexing module-info.class
+   Error:com.android.builder.dexing.DexArchiveBuilderException:
+   Failed to process C:\Users\admin\.gradle\caches\modules-2\files-2.1\com.google.code.gson\gson\2.8.6\9180733b7df8542621dc12e21e87557e8c99b8cb\gson-2.8.6.jar
+   
+   找到gson-2.8.6.jar文件，删除里面的module-info.class文件即可
